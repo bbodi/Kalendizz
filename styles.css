@@ -247,6 +247,42 @@ body {
   text-decoration: underline;
 }
 
+/* Event wrapper for heart icon */
+.event-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.event-wrapper .event-title,
+.event-wrapper .event-link {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Favorite heart icon */
+.favorite-heart {
+  font-size: 10px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.event-wrapper:hover .favorite-heart {
+  opacity: 1;
+}
+
+.favorite-heart.active {
+  opacity: 1;
+}
+
+.favorite-heart:hover {
+  transform: scale(1.3);
+}
+
 /* =====================================================
    Country Filter Panel
    ===================================================== */
@@ -390,6 +426,17 @@ body {
 
 .filter-item.inactive:hover {
   opacity: 0.8;
+}
+
+/* Favorite filter special styling */
+.filter-item.filter-favorite {
+  background: #fff0f0;
+  border-color: #ffcdd2;
+}
+
+.filter-item.filter-favorite.active {
+  background: #ffebee;
+  border-color: #e91e63;
 }
 
 /* Filter count badge */

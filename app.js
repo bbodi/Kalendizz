@@ -13,6 +13,15 @@ const activeFilters = new Set();
 // Store all found flags
 let allFlags = [];
 
+// Store favorite event IDs (persisted to localStorage)
+let favorites = new Set();
+
+// Filter mode for favorites (null = show all, true = show only favorites)
+let showOnlyFavorites = false;
+
+// Flag to prevent link opening when clicking heart
+let heartClickedRecently = false;
+
 // Flag to country name mapping
 const FLAG_NAMES = {
   '🇦🇴': 'Angola',
@@ -228,9 +237,53 @@ function getAllFlags() {
 }
 
 /**
+ * Load favorites from localStorage
+ */
+function loadFavorites() {
+  try {
+    const saved = localStorage.getItem('calendarFavorites');
+    if (saved) {
+      favorites = new Set(JSON.parse(saved));
+    }
+  } catch (e) {
+    console.warn('Could not load favorites:', e);
+  }
+}
+
+/**
+ * Save favorites to localStorage
+ */
+function saveFavorites() {
+  try {
+    localStorage.setItem('calendarFavorites', JSON.stringify([...favorites]));
+  } catch (e) {
+    console.warn('Could not save favorites:', e);
+  }
+}
+
+/**
+ * Toggle favorite status for an event
+ */
+function toggleFavorite(eventId) {
+  if (favorites.has(eventId)) {
+    favorites.delete(eventId);
+  } else {
+    favorites.add(eventId);
+  }
+  saveFavorites();
+  refreshCalendars();
+  updateFavoriteFilterUI();
+}
+
+/**
  * Check if an event should be visible based on current filters
  */
 function isEventVisible(event) {
+  // If showing only favorites, bypass country filter for favorite events
+  if (showOnlyFavorites) {
+    return favorites.has(event.id);
+  }
+  
   const flag = extractFlag(event.title);
   
   // If event has no flag, only show when ALL filters are active
@@ -339,6 +392,9 @@ function refreshCalendars() {
 function initFilterPanel() {
   allFlags = getAllFlags();
   
+  // Load favorites from localStorage
+  loadFavorites();
+  
   // Initialize all filters as active
   allFlags.forEach(flag => activeFilters.add(flag));
   
@@ -348,6 +404,33 @@ function initFilterPanel() {
   const filterArrow = filterToggle.querySelector('.filter-arrow');
   const selectAllBtn = document.getElementById('select-all');
   const selectNoneBtn = document.getElementById('select-none');
+  
+  // Add favorites filter as first item
+  const favItem = document.createElement('div');
+  favItem.className = 'filter-item filter-favorite';
+  favItem.id = 'filter-favorite';
+  favItem.textContent = '❤️';
+  favItem.dataset.flag = 'favorite';
+  
+  favItem.addEventListener('click', () => {
+    showOnlyFavorites = !showOnlyFavorites;
+    updateFavoriteFilterUI();
+    refreshCalendars();
+  });
+  
+  favItem.addEventListener('mouseenter', (e) => {
+    showTooltip('Favorites only', e.clientX, e.clientY);
+  });
+  
+  favItem.addEventListener('mousemove', (e) => {
+    showTooltip('Favorites only', e.clientX, e.clientY);
+  });
+  
+  favItem.addEventListener('mouseleave', () => {
+    hideTooltip();
+  });
+  
+  filterGrid.appendChild(favItem);
   
   // Populate flag grid
   allFlags.forEach(flag => {
@@ -387,6 +470,8 @@ function initFilterPanel() {
     
     filterGrid.appendChild(item);
   });
+  
+  updateFavoriteFilterUI();
   
   // Toggle dropdown
   filterToggle.addEventListener('click', () => {
@@ -446,6 +531,59 @@ function updateFilterCount() {
   } else if (countBadge) {
     countBadge.remove();
   }
+}
+
+/**
+ * Update the favorite filter UI
+ */
+function updateFavoriteFilterUI() {
+  const favItem = document.getElementById('filter-favorite');
+  if (favItem) {
+    if (showOnlyFavorites) {
+      favItem.classList.add('active');
+      favItem.classList.remove('inactive');
+    } else {
+      favItem.classList.remove('active');
+      favItem.classList.remove('inactive');
+    }
+  }
+}
+
+/**
+ * Setup click handlers for favorite hearts and event links
+ */
+function setupFavoriteClickHandler() {
+  // Use capture phase to intercept before anything else
+  document.addEventListener('mousedown', (e) => {
+    // Handle heart clicks - set flag on mousedown before click event fires
+    const heart = e.target.closest('.favorite-heart');
+    if (heart) {
+      heartClickedRecently = true;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      const eventId = heart.dataset.favoriteId;
+      if (eventId) {
+        toggleFavorite(eventId);
+      }
+      // Reset flag after a short delay
+      setTimeout(() => {
+        heartClickedRecently = false;
+      }, 100);
+      return false;
+    }
+  }, true); // Use capture phase
+  
+  // Also prevent on click
+  document.addEventListener('click', (e) => {
+    const heart = e.target.closest('.favorite-heart');
+    if (heart) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
+  }, true);
 }
 
 /**
@@ -566,15 +704,21 @@ function initCalendar(monthIndex) {
       // All day events
       allday(event) {
         const hasLink = event.raw && event.raw.link;
+        const isFavorite = favorites.has(event.id);
+        const heartClass = isFavorite ? 'favorite-heart active' : 'favorite-heart';
+        const heartIcon = isFavorite ? '❤️' : '🤍';
         
-        let content;
+        let titleContent;
         if (hasLink) {
-          content = `<a href="${event.raw.link}" target="_blank" class="event-link" data-event-id="${event.id}">${event.title}</a>`;
+          titleContent = `<span class="event-title" data-event-id="${event.id}" data-link="${event.raw.link}">${event.title}</span>`;
         } else {
-          content = `<span class="event-title" data-event-id="${event.id}">${event.title}</span>`;
+          titleContent = `<span class="event-title" data-event-id="${event.id}">${event.title}</span>`;
         }
         
-        return content;
+        return `<div class="event-wrapper" data-event-id="${event.id}">
+          ${titleContent}
+          <span class="${heartClass}" data-favorite-id="${event.id}">${heartIcon}</span>
+        </div>`;
       },
       // Month grid header (day number)
       monthGridHeader(model) {
@@ -653,8 +797,12 @@ function initCalendar(monthIndex) {
     calendar.createEvents(tuiEvents);
   }
   
-  // Click event - open link
+  // Click event - open link (but not if heart was clicked)
   calendar.on('clickEvent', ({ event }) => {
+    // Don't open link if heart was clicked
+    if (heartClickedRecently) {
+      return;
+    }
     if (event.raw && event.raw.link) {
       window.open(event.raw.link, '_blank');
     }
@@ -722,8 +870,12 @@ function init() {
   // Setup hover events for tooltips
   setupHoverEvents();
   
+  // Setup favorite heart click handler
+  setupFavoriteClickHandler();
+  
   console.log(`${calendars.length} calendars initialized successfully.`);
   console.log(`Found ${allFlags.length} country flags:`, allFlags.join(' '));
+  console.log(`Loaded ${favorites.size} favorites`);
 }
 
 // Start on DOM load
