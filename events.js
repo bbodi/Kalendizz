@@ -23,7 +23,8 @@
 const EVENTS = [
   {
     id: 'evt-1',
-    title: '🇵🇱Exodus Kizomba Congress - IV Edition',
+    flag: '🇵🇱',
+    title: 'Exodus Kizomba Congress - IV Edition',
     start: '2026-01-28',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/534072715666146',
@@ -33,7 +34,8 @@ const EVENTS = [
   },
   {
     id: 'evt-2',
-    title: '🇬🇧ABCD Festival 2026',
+    flag: '🇬🇧',
+    title: 'ABCD Festival 2026',
     start: '2026-01-29',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/1004319487956017',
@@ -43,7 +45,8 @@ const EVENTS = [
   },
   {
     id: 'evt-3',
-    title: '🇺🇸New York SBKZ Congress',
+    flag: '🇺🇸',
+    title: 'New York SBKZ Congress',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/966984131673331',
@@ -53,7 +56,8 @@ const EVENTS = [
   },
   {
     id: 'evt-4',
-    title: '🇨🇭BERN IS KIZOMBA WEEKEND 2026',
+    flag: '🇨🇭',
+    title: 'BERN IS KIZOMBA WEEKEND 2026',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/1163418868792582',
@@ -63,7 +67,8 @@ const EVENTS = [
   },
   {
     id: 'evt-5',
-    title: '🇫🇷HAKUNA MATATA FESTIVAL',
+    flag: '🇫🇷',
+    title: 'HAKUNA MATATA FESTIVAL',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/2653617304834345',
@@ -73,7 +78,8 @@ const EVENTS = [
   },
   {
     id: 'evt-6',
-    title: '🇨🇭Urban Kiz Temptation Festival',
+    flag: '🇨🇭',
+    title: 'Urban Kiz Temptation Festival',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/1772576683461891',
@@ -93,7 +99,8 @@ const EVENTS = [
   },
   {
     id: 'evt-8',
-    title: '🇧🇪LATIN DREAMS FESTIVAL 2026',
+    flag: '🇧🇪',
+    title: 'LATIN DREAMS FESTIVAL 2026',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/3821866304746520',
@@ -113,7 +120,8 @@ const EVENTS = [
   },
   {
     id: 'evt-10',
-    title: '🇵🇹SABOR A CABO VERDE Festival',
+    flag: '🇵🇹',
+    title: 'SABOR A CABO VERDE Festival',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/643976074711407',
@@ -123,7 +131,8 @@ const EVENTS = [
   },
   {
     id: 'evt-11',
-    title: '🇷🇴Queens & Kings - Royals of Kiz',
+    flag: '🇷🇴',
+    title: 'Queens & Kings - Royals of Kiz',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/994110349372920',
@@ -143,7 +152,8 @@ const EVENTS = [
   },
   {
     id: 'evt-13',
-    title: '🇸🇮KIZZ KISS Festival 2026',
+    flag: '🇸🇮',
+    title: 'KIZZ KISS Festival 2026',
     start: '2026-02-05',
     end: '2026-02-08',
     link: 'https://www.facebook.com/events/1197320138404954',
@@ -153,7 +163,8 @@ const EVENTS = [
   },
   {
     id: 'evt-14',
-    title: '🇩🇿Algeria Festival Bordeaux 5',
+    flag: '🇩🇿',
+    title: 'Algeria Festival Bordeaux 5',
     start: '2026-02-05',
     end: '2026-02-08',
     link: 'https://www.facebook.com/events/652078487361267',
@@ -163,7 +174,8 @@ const EVENTS = [
   },
   {
     id: 'evt-15',
-    title: '🇨🇿PRAGUE KWANZA FESTIVAL 2026',
+    flag: '🇨🇿',
+    title: 'PRAGUE KWANZA FESTIVAL 2026',
     start: '2026-02-05',
     end: '2026-02-08',
     link: 'https://www.facebook.com/events/958645879237331',
@@ -173,7 +185,8 @@ const EVENTS = [
   },
   {
     id: 'evt-16',
-    title: '🇫🇷BE COOL FESTIVAL 4 Edition',
+    flag: '🇫🇷',
+    title: 'BE COOL FESTIVAL 4 Edition',
     start: '2026-02-06',
     end: '2026-02-08',
     link: 'https://www.facebook.com/events/1193376698880948',
@@ -183,7 +196,8 @@ const EVENTS = [
   },
   {
     id: 'evt-17',
-    title: '🇦🇴WE LOVE ANGOLA Trip 2026',
+    flag: '🇦🇴',
+    title: 'WE LOVE ANGOLA Trip 2026',
     start: '2026-02-10',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/644437561501724',
@@ -193,7 +207,8 @@ const EVENTS = [
   },
   {
     id: 'evt-18',
-    title: '🇩🇪SAMSTAG DA MUXIMA IV',
+    flag: '🇩🇪',
+    title: 'SAMSTAG DA MUXIMA IV',
     start: '2026-02-13',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/609427632250942',
@@ -203,7 +218,8 @@ const EVENTS = [
   },
   {
     id: 'evt-19',
-    title: '🇫🇮Kiz&Connect Weekender',
+    flag: '🇫🇮',
+    title: 'Kiz&Connect Weekender',
     start: '2026-02-13',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/1377297003825782',
@@ -213,7 +229,8 @@ const EVENTS = [
   },
   {
     id: 'evt-20',
-    title: '🇪🇸MAGIC WINTER 2026 VIGO',
+    flag: '🇪🇸',
+    title: 'MAGIC WINTER 2026 VIGO',
     start: '2026-02-13',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/1099805625131175',
@@ -223,7 +240,8 @@ const EVENTS = [
   },
   {
     id: 'evt-21',
-    title: '🇫🇷Kizatours Afro Legacy Festival',
+    flag: '🇫🇷',
+    title: 'Kizatours Afro Legacy Festival',
     start: '2026-02-13',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/1669984580259811',
@@ -233,7 +251,8 @@ const EVENTS = [
   },
   {
     id: 'evt-22',
-    title: '🇫🇷Back 2 Basic Kizomba Winter',
+    flag: '🇫🇷',
+    title: 'Back 2 Basic Kizomba Winter',
     start: '2026-02-13',
     end: '2026-02-15',
     link: 'https://www.facebook.com/events/1318845236103416',
@@ -253,7 +272,8 @@ const EVENTS = [
   },
   {
     id: 'evt-24',
-    title: '🇫🇷Wakanda Festival Paris 5th',
+    flag: '🇫🇷',
+    title: 'Wakanda Festival Paris 5th',
     start: '2026-02-19',
     end: '2026-02-22',
     link: 'https://www.facebook.com/events/1840625616753828',
@@ -263,7 +283,8 @@ const EVENTS = [
   },
   {
     id: 'evt-25',
-    title: '🇫🇷FREEDOM ROMANTIC FESTIVAL 9',
+    flag: '🇫🇷',
+    title: 'FREEDOM ROMANTIC FESTIVAL 9',
     start: '2026-02-20',
     end: '2026-02-22',
     link: 'https://www.facebook.com/events/656495683568934',
@@ -283,7 +304,8 @@ const EVENTS = [
   },
   {
     id: 'evt-27',
-    title: '🇲🇽MKC + LOGIA 2026 SURVIVORS',
+    flag: '🇲🇽',
+    title: 'MKC + LOGIA 2026 SURVIVORS',
     start: '2026-02-26',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/1007054967956410',
@@ -293,7 +315,8 @@ const EVENTS = [
   },
   {
     id: 'evt-28',
-    title: '🇭🇷Baila Conmigo Congress Latino',
+    flag: '🇭🇷',
+    title: 'Baila Conmigo Congress Latino',
     start: '2026-02-27',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/976777167965822',
@@ -303,7 +326,8 @@ const EVENTS = [
   },
   {
     id: 'evt-29',
-    title: '🇵🇹Eme Kia Festival',
+    flag: '🇵🇹',
+    title: 'Eme Kia Festival',
     start: '2026-02-27',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/690548050082278',
@@ -313,7 +337,8 @@ const EVENTS = [
   },
   {
     id: 'evt-30',
-    title: '🇫🇷LATINA SOL KIZ FESTIVAL',
+    flag: '🇫🇷',
+    title: 'LATINA SOL KIZ FESTIVAL',
     start: '2026-02-27',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/640614591781073',
@@ -323,7 +348,8 @@ const EVENTS = [
   },
   {
     id: 'evt-31',
-    title: '🇸🇪DIAMONDS FOREVER EDITION 3',
+    flag: '🇸🇪',
+    title: 'DIAMONDS FOREVER EDITION 3',
     start: '2026-02-27',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/1393534388522086',
@@ -333,7 +359,8 @@ const EVENTS = [
   },
   {
     id: 'evt-32',
-    title: '🇪🇸VI SBK WEEKEND OURENSE',
+    flag: '🇪🇸',
+    title: 'VI SBK WEEKEND OURENSE',
     start: '2026-02-27',
     end: '2026-03-01',
     link: 'https://www.facebook.com/events/727158222970961',
@@ -343,7 +370,8 @@ const EVENTS = [
   },
   {
     id: 'evt-33',
-    title: '🇪🇪KIZOMBA TALLINN FESTIVAL 2026',
+    flag: '🇪🇪',
+    title: 'KIZOMBA TALLINN FESTIVAL 2026',
     start: '2026-03-05',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/918959480410135',
@@ -353,7 +381,8 @@ const EVENTS = [
   },
   {
     id: 'evt-34',
-    title: '🇧🇬15TH Intl Salsa Bachata Kizomba',
+    flag: '🇧🇬',
+    title: '15TH Intl Salsa Bachata Kizomba',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/1071071021772535',
@@ -363,7 +392,8 @@ const EVENTS = [
   },
   {
     id: 'evt-35',
-    title: '🇵🇭Boracay Latin Dance Festival',
+    flag: '🇵🇭',
+    title: 'Boracay Latin Dance Festival',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/763922692947707',
@@ -373,7 +403,8 @@ const EVENTS = [
   },
   {
     id: 'evt-36',
-    title: '🇵🇹Djumbai Afro Festival 5th',
+    flag: '🇵🇹',
+    title: 'Djumbai Afro Festival 5th',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/938658478477525',
@@ -383,7 +414,8 @@ const EVENTS = [
   },
   {
     id: 'evt-37',
-    title: '🇩🇪Royalkizz 5th Edition',
+    flag: '🇩🇪',
+    title: 'Royalkizz 5th Edition',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/940213301617116',
@@ -393,7 +425,8 @@ const EVENTS = [
   },
   {
     id: 'evt-38',
-    title: '🇫🇷Eclipse Kizomba Festival 2nd',
+    flag: '🇫🇷',
+    title: 'Eclipse Kizomba Festival 2nd',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/1429530971499668',
@@ -403,7 +436,8 @@ const EVENTS = [
   },
   {
     id: 'evt-39',
-    title: '🇨🇭SHATTAKIZ WEEKENDER',
+    flag: '🇨🇭',
+    title: 'SHATTAKIZ WEEKENDER',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/1429530971499668',
@@ -413,7 +447,8 @@ const EVENTS = [
   },
   {
     id: 'evt-40',
-    title: '🇫🇷Je Veux Juste Danser 3',
+    flag: '🇫🇷',
+    title: 'Je Veux Juste Danser 3',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/698934832945973',
@@ -423,7 +458,8 @@ const EVENTS = [
   },
   {
     id: 'evt-41',
-    title: '🇫🇷WEEK-END A DANSER IV',
+    flag: '🇫🇷',
+    title: 'WEEK-END A DANSER IV',
     start: '2026-03-06',
     end: '2026-03-08',
     link: 'https://www.facebook.com/events/1198016791737914',
@@ -443,7 +479,8 @@ const EVENTS = [
   },
   {
     id: 'evt-43',
-    title: '🇫🇷I WILL DANCE Festival 5',
+    flag: '🇫🇷',
+    title: 'I WILL DANCE Festival 5',
     start: '2026-03-12',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/1197400349059658',
@@ -453,7 +490,8 @@ const EVENTS = [
   },
   {
     id: 'evt-44',
-    title: '🇷🇴Carpathian Latino Fest 5th',
+    flag: '🇷🇴',
+    title: 'Carpathian Latino Fest 5th',
     start: '2026-03-12',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/1062121732511799',
@@ -463,7 +501,8 @@ const EVENTS = [
   },
   {
     id: 'evt-45',
-    title: '🇷🇴Angolan Dances Weekend Romania',
+    flag: '🇷🇴',
+    title: 'Angolan Dances Weekend Romania',
     start: '2026-03-13',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/865899973039528',
@@ -473,7 +512,8 @@ const EVENTS = [
   },
   {
     id: 'evt-46',
-    title: '🇨🇦SEMPRE KIZOMBA SEMBA WEEKENDER',
+    flag: '🇨🇦',
+    title: 'SEMPRE KIZOMBA SEMBA WEEKENDER',
     start: '2026-03-13',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/800843099011660',
@@ -483,7 +523,8 @@ const EVENTS = [
   },
   {
     id: 'evt-47',
-    title: '🇮🇹KARMA International Festival',
+    flag: '🇮🇹',
+    title: 'KARMA International Festival',
     start: '2026-03-13',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/1393271762395803',
@@ -493,7 +534,8 @@ const EVENTS = [
   },
   {
     id: 'evt-48',
-    title: '🇪🇸KIM MADRID 2026',
+    flag: '🇪🇸',
+    title: 'KIM MADRID 2026',
     start: '2026-03-13',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/724735086766217',
@@ -503,7 +545,8 @@ const EVENTS = [
   },
   {
     id: 'evt-49',
-    title: '🇨🇭TENTAÇÃO WINTER Zurich',
+    flag: '🇨🇭',
+    title: 'TENTAÇÃO WINTER Zurich',
     start: '2026-03-13',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/725893219988431',
@@ -513,7 +556,8 @@ const EVENTS = [
   },
   {
     id: 'evt-50',
-    title: '🇫🇷Ski Latino 26 La Plagne',
+    flag: '🇫🇷',
+    title: 'Ski Latino 26 La Plagne',
     start: '2026-03-14',
     end: '2026-03-15',
     link: 'https://www.facebook.com/events/713872781717527',
@@ -523,7 +567,8 @@ const EVENTS = [
   },
   {
     id: 'evt-51',
-    title: '🇩🇪Wonderland Berlin Festival',
+    flag: '🇩🇪',
+    title: 'Wonderland Berlin Festival',
     start: '2026-03-18',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/649411800910622',
@@ -533,7 +578,8 @@ const EVENTS = [
   },
   {
     id: 'evt-52',
-    title: '🇹🇷ISTANBUL WORLD DANCE CONGRESS',
+    flag: '🇹🇷',
+    title: 'ISTANBUL WORLD DANCE CONGRESS',
     start: '2026-03-18',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/1827036121222164',
@@ -543,7 +589,8 @@ const EVENTS = [
   },
   {
     id: 'evt-53',
-    title: '🇪🇸La Kizomba Festival 2nd',
+    flag: '🇪🇸',
+    title: 'La Kizomba Festival 2nd',
     start: '2026-03-20',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/1380124799664558',
@@ -553,7 +600,8 @@ const EVENTS = [
   },
   {
     id: 'evt-54',
-    title: '🇮🇹LoveMI Kizomba Festival 2nd',
+    flag: '🇮🇹',
+    title: 'LoveMI Kizomba Festival 2nd',
     start: '2026-03-20',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/1467399280884164',
@@ -563,7 +611,8 @@ const EVENTS = [
   },
   {
     id: 'evt-55',
-    title: '🇦🇹Kizbomba Evolution 2026',
+    flag: '🇦🇹',
+    title: 'Kizbomba Evolution 2026',
     start: '2026-03-20',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/676820304797988',
@@ -573,7 +622,8 @@ const EVENTS = [
   },
   {
     id: 'evt-56',
-    title: '🇬🇧Kizomba Festival London Spring',
+    flag: '🇬🇧',
+    title: 'Kizomba Festival London Spring',
     start: '2026-03-20',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/1435063530871256',
@@ -583,7 +633,8 @@ const EVENTS = [
   },
   {
     id: 'evt-57',
-    title: '🇪🇸LOVES KIZOMBA ORIGINS 2026',
+    flag: '🇪🇸',
+    title: 'LOVES KIZOMBA ORIGINS 2026',
     start: '2026-03-20',
     end: '2026-03-22',
     link: 'https://www.facebook.com/events/1170700618133393',
@@ -593,7 +644,8 @@ const EVENTS = [
   },
   {
     id: 'evt-58',
-    title: '🇮🇹SIN FRONTERAS Taormina Sicily',
+    flag: '🇮🇹',
+    title: 'SIN FRONTERAS Taormina Sicily',
     start: '2026-03-26',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/535390966178565',
@@ -603,7 +655,8 @@ const EVENTS = [
   },
   {
     id: 'evt-59',
-    title: '🇺🇸DC Cherry Blossom Kizomba',
+    flag: '🇺🇸',
+    title: 'DC Cherry Blossom Kizomba',
     start: '2026-03-26',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/1582417556051395',
@@ -613,7 +666,8 @@ const EVENTS = [
   },
   {
     id: 'evt-60',
-    title: '🇷🇴Cluj Kizomba Festival 8th',
+    flag: '🇷🇴',
+    title: 'Cluj Kizomba Festival 8th',
     start: '2026-03-26',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/1312174937220660',
@@ -633,7 +687,8 @@ const EVENTS = [
   },
   {
     id: 'evt-62',
-    title: '🇫🇷KIZ RELAX MTP FESTIVAL 3',
+    flag: '🇫🇷',
+    title: 'KIZ RELAX MTP FESTIVAL 3',
     start: '2026-03-27',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/679133424574928',
@@ -643,7 +698,8 @@ const EVENTS = [
   },
   {
     id: 'evt-63',
-    title: '🇫🇷Dax Kizomba Weekender',
+    flag: '🇫🇷',
+    title: 'Dax Kizomba Weekender',
     start: '2026-03-27',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/1266813371844083',
@@ -653,7 +709,8 @@ const EVENTS = [
   },
   {
     id: 'evt-64',
-    title: '🇳🇱Amsterdam KizzArena Spring',
+    flag: '🇳🇱',
+    title: 'Amsterdam KizzArena Spring',
     start: '2026-03-27',
     end: '2026-03-29',
     link: 'https://www.facebook.com/events/2416473305415278',
@@ -663,7 +720,8 @@ const EVENTS = [
   },
   {
     id: 'evt-65',
-    title: '🇧🇪Suave Dance Festival Easter',
+    flag: '🇧🇪',
+    title: 'Suave Dance Festival Easter',
     start: '2026-04-02',
     end: '2026-04-05',
     link: 'https://www.facebook.com/events/1857909168145945',
@@ -673,7 +731,8 @@ const EVENTS = [
   },
   {
     id: 'evt-66',
-    title: '🇳🇱I Love Kizomba Rotterdam 2nd',
+    flag: '🇳🇱',
+    title: 'I Love Kizomba Rotterdam 2nd',
     start: '2026-04-03',
     end: '2026-04-05',
     link: 'https://www.facebook.com/events/1874003083464281',
@@ -683,7 +742,8 @@ const EVENTS = [
   },
   {
     id: 'evt-67',
-    title: '🇨🇦Victoria Intl Kizomba 7th',
+    flag: '🇨🇦',
+    title: 'Victoria Intl Kizomba 7th',
     start: '2026-04-03',
     end: '2026-04-05',
     link: 'https://www.facebook.com/events/1018836737121988',
@@ -693,7 +753,8 @@ const EVENTS = [
   },
   {
     id: 'evt-68',
-    title: '🇭🇺Diamond Kizomba Festival',
+    flag: '🇭🇺',
+    title: 'Diamond Kizomba Festival',
     start: '2026-04-03',
     end: '2026-04-05',
     link: 'https://www.facebook.com/events/1910777399750539',
@@ -703,7 +764,8 @@ const EVENTS = [
   },
   {
     id: 'evt-69',
-    title: '🇫🇷Pau Royal Kizomba 3rd',
+    flag: '🇫🇷',
+    title: 'Pau Royal Kizomba 3rd',
     start: '2026-04-03',
     end: '2026-04-05',
     link: 'https://www.facebook.com/events/648144664519621',
@@ -713,7 +775,8 @@ const EVENTS = [
   },
   {
     id: 'evt-70',
-    title: '🇪🇸Hot Tropical Dance Málaga',
+    flag: '🇪🇸',
+    title: 'Hot Tropical Dance Málaga',
     start: '2026-04-08',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/1960971431409094/',
@@ -723,7 +786,8 @@ const EVENTS = [
   },
   {
     id: 'evt-71',
-    title: '🇹🇭Coco Loco Pattaya Latin',
+    flag: '🇹🇭',
+    title: 'Coco Loco Pattaya Latin',
     start: '2026-04-09',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/2996840950495777',
@@ -733,7 +797,8 @@ const EVENTS = [
   },
   {
     id: 'evt-72',
-    title: '🇵🇱Frenzy Easter Edition 2026',
+    flag: '🇵🇱',
+    title: 'Frenzy Easter Edition 2026',
     start: '2026-04-09',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/1192824395900705/',
@@ -743,7 +808,8 @@ const EVENTS = [
   },
   {
     id: 'evt-73',
-    title: '🇫🇷TARRAXO SPRING LYON 4th',
+    flag: '🇫🇷',
+    title: 'TARRAXO SPRING LYON 4th',
     start: '2026-04-09',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/3510412992588021',
@@ -753,7 +819,8 @@ const EVENTS = [
   },
   {
     id: 'evt-74',
-    title: '🇧🇪KIZZ ME BACHAMORE Belgium',
+    flag: '🇧🇪',
+    title: 'KIZZ ME BACHAMORE Belgium',
     start: '2026-04-10',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/1198289688348884',
@@ -763,7 +830,8 @@ const EVENTS = [
   },
   {
     id: 'evt-75',
-    title: '🇮🇹Crazy Kiz Spring Italy 4.0',
+    flag: '🇮🇹',
+    title: 'Crazy Kiz Spring Italy 4.0',
     start: '2026-04-10',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/1848449342665305',
@@ -773,7 +841,8 @@ const EVENTS = [
   },
   {
     id: 'evt-76',
-    title: '🇩🇪Treveris Dance Festival',
+    flag: '🇩🇪',
+    title: 'Treveris Dance Festival',
     start: '2026-04-10',
     end: '2026-04-12',
     link: 'https://www.facebook.com/events/1012020030748728',
