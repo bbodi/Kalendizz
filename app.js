@@ -177,10 +177,19 @@ function formatDate(date) {
  */
 function convertEventsToTUIFormat(events) {
   return events.map(event => {
+    // Extract flag from title if not already in event.flag
+    let flag = event.flag || extractFlag(event.title);
+    let title = event.title;
+    
+    // Remove flag emoji from title if present
+    if (flag && title.startsWith(flag)) {
+      title = title.substring(flag.length).trim();
+    }
+    
     return {
       id: event.id,
       calendarId: 'main',
-      title: event.title,
+      title: title,
       start: event.start,
       end: event.end,
       isAllday: true,
@@ -188,9 +197,10 @@ function convertEventsToTUIFormat(events) {
       backgroundColor: event.backgroundColor || '#03bd9e',
       color: event.color || '#ffffff',
       borderColor: event.backgroundColor || '#03bd9e',
-      // Custom properties for link
+      // Custom properties for link and flag
       raw: {
-        link: event.link
+        link: event.link,
+        flag: flag
       }
     };
   });
@@ -221,13 +231,42 @@ function extractFlag(title) {
 }
 
 /**
+ * Convert emoji flag to ISO country code for flagcdn
+ */
+function emojiToCountryCode(emoji) {
+  if (!emoji) return null;
+  
+  // Map emoji flags to ISO country codes
+  const emojiToCode = {
+    '🇦🇴': 'ao', '🇦🇹': 'at', '🇧🇪': 'be', '🇧🇬': 'bg', '🇨🇦': 'ca',
+    '🇨🇭': 'ch', '🇨🇿': 'cz', '🇩🇪': 'de', '🇩🇿': 'dz', '🇪🇪': 'ee',
+    '🇪🇸': 'es', '🇫🇮': 'fi', '🇫🇷': 'fr', '🇬🇧': 'gb', '🇭🇷': 'hr',
+    '🇭🇺': 'hu', '🇮🇹': 'it', '🇲🇽': 'mx', '🇳🇱': 'nl', '🇵🇭': 'ph',
+    '🇵🇱': 'pl', '🇵🇹': 'pt', '🇷🇴': 'ro', '🇸🇪': 'se', '🇸🇮': 'si',
+    '🇹🇭': 'th', '🇹🇷': 'tr', '🇺🇸': 'us'
+  };
+  
+  return emojiToCode[emoji] || null;
+}
+
+/**
+ * Get flagcdn URL for a flag emoji
+ */
+function getFlagImageUrl(flagEmoji) {
+  const countryCode = emojiToCountryCode(flagEmoji);
+  if (!countryCode) return null;
+  return `https://flagcdn.com/20x15/${countryCode}.png`;
+}
+
+/**
  * Get all unique flags from events
  */
 function getAllFlags() {
   const flags = new Set();
   
   window.EVENTS.forEach(event => {
-    const flag = extractFlag(event.title);
+    // Use event.flag if available, otherwise extract from title
+    const flag = event.flag || extractFlag(event.title);
     if (flag) {
       flags.add(flag);
     }
@@ -272,8 +311,30 @@ function toggleFavorite(eventId) {
     favorites.add(eventId);
   }
   saveFavorites();
-  refreshCalendars();
+  
+  // Only refresh calendars if favorites filter is active, otherwise just update the heart icon
+  if (showOnlyFavorites) {
+    refreshCalendars();
+  } else {
+    // Just update the heart icon in the DOM without full refresh
+    updateHeartIcon(eventId);
+  }
   updateFavoriteFilterUI();
+}
+
+/**
+ * Update heart icon for a specific event without full calendar refresh
+ */
+function updateHeartIcon(eventId) {
+  const isFavorite = favorites.has(eventId);
+  const heartIcon = isFavorite ? '❤️' : '🤍';
+  const heartClass = isFavorite ? 'favorite-heart active' : 'favorite-heart';
+  
+  // Find all heart icons for this event
+  document.querySelectorAll(`[data-favorite-id="${eventId}"]`).forEach(heart => {
+    heart.textContent = heartIcon;
+    heart.className = heartClass;
+  });
 }
 
 /**
@@ -285,7 +346,8 @@ function isEventVisible(event) {
     return favorites.has(event.id);
   }
   
-  const flag = extractFlag(event.title);
+  // Use event.flag if available, otherwise extract from title
+  const flag = event.flag || extractFlag(event.title);
   
   // If event has no flag, only show when ALL filters are active
   if (!flag) {
@@ -406,6 +468,9 @@ function initFilterPanel() {
   const selectAllBtn = document.getElementById('select-all');
   const selectNoneBtn = document.getElementById('select-none');
   
+  // Clear existing filter items to prevent duplicates
+  filterGrid.innerHTML = '';
+  
   // Add favorites filter as first item
   const favItem = document.createElement('div');
   favItem.className = 'filter-item filter-favorite';
@@ -439,8 +504,20 @@ function initFilterPanel() {
     // Set initial class based on loaded state
     const isActive = activeFilters.has(flag);
     item.className = isActive ? 'filter-item active' : 'filter-item inactive';
-    item.textContent = flag;
     item.dataset.flag = flag;
+    
+    // Add flag image instead of emoji text (use smaller size for filter)
+    const flagUrl = getFlagImageUrl(flag);
+    if (flagUrl) {
+      const img = document.createElement('img');
+      img.src = flagUrl;
+      img.alt = flag;
+      img.className = 'filter-flag-image';
+      item.appendChild(img);
+    } else {
+      // Fallback to emoji if no image available
+      item.textContent = flag;
+    }
     
     item.addEventListener('click', () => {
       if (activeFilters.has(flag)) {
@@ -711,6 +788,15 @@ function initCalendar(monthIndex) {
         const heartClass = isFavorite ? 'favorite-heart active' : 'favorite-heart';
         const heartIcon = isFavorite ? '❤️' : '🤍';
         
+        // Get flag image if flag exists
+        let flagImage = '';
+        if (event.raw && event.raw.flag) {
+          const flagUrl = getFlagImageUrl(event.raw.flag);
+          if (flagUrl) {
+            flagImage = `<img src="${flagUrl}" alt="${event.raw.flag}" class="event-flag" />`;
+          }
+        }
+        
         let titleContent;
         if (hasLink) {
           titleContent = `<span class="event-title" data-event-id="${event.id}" data-link="${event.raw.link}">${event.title}</span>`;
@@ -719,6 +805,7 @@ function initCalendar(monthIndex) {
         }
         
         return `<div class="event-wrapper" data-event-id="${event.id}">
+          ${flagImage}
           ${titleContent}
           <span class="${heartClass}" data-favorite-id="${event.id}">${heartIcon}</span>
         </div>`;
