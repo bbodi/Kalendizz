@@ -261,6 +261,7 @@ function saveFavorites() {
   }
 }
 
+
 /**
  * Toggle favorite status for an event
  */
@@ -368,11 +369,11 @@ function recalculateCalendarHeight(monthIndex) {
  */
 function refreshCalendars() {
   calendars.forEach((calendar, monthIndex) => {
-    // Recalculate height based on filtered events
-    recalculateCalendarHeight(monthIndex);
-    
     // Clear existing events
     calendar.clear();
+    
+    // Recalculate height
+    recalculateCalendarHeight(monthIndex);
     
     // Add filtered events
     const monthEvents = getFilteredEventsForMonth(monthIndex);
@@ -380,10 +381,10 @@ function refreshCalendars() {
     if (tuiEvents.length > 0) {
       calendar.createEvents(tuiEvents);
     }
-    
-    // Force calendar to re-render with new height
-    calendar.render();
   });
+  
+  // Trigger window resize to force calendars to recalculate layout
+  window.dispatchEvent(new Event('resize'));
 }
 
 /**
@@ -435,7 +436,9 @@ function initFilterPanel() {
   // Populate flag grid
   allFlags.forEach(flag => {
     const item = document.createElement('div');
-    item.className = 'filter-item active';
+    // Set initial class based on loaded state
+    const isActive = activeFilters.has(flag);
+    item.className = isActive ? 'filter-item active' : 'filter-item inactive';
     item.textContent = flag;
     item.dataset.flag = flag;
     
@@ -490,7 +493,7 @@ function initFilterPanel() {
   // Select All button
   selectAllBtn.addEventListener('click', () => {
     allFlags.forEach(flag => activeFilters.add(flag));
-    document.querySelectorAll('.filter-item').forEach(item => {
+    document.querySelectorAll('.filter-item:not(.filter-favorite)').forEach(item => {
       item.classList.add('active');
       item.classList.remove('inactive');
     });
@@ -501,7 +504,7 @@ function initFilterPanel() {
   // Select None button
   selectNoneBtn.addEventListener('click', () => {
     activeFilters.clear();
-    document.querySelectorAll('.filter-item').forEach(item => {
+    document.querySelectorAll('.filter-item:not(.filter-favorite)').forEach(item => {
       item.classList.remove('active');
       item.classList.add('inactive');
     });
@@ -650,8 +653,8 @@ function initCalendar(monthIndex) {
   const container = document.getElementById(`calendar-${monthIndex}`);
   if (!container) return null;
   
-  // Calculate dynamic height based on max events and weeks
-  const maxEvents = getMaxEventsPerDayInMonth(monthIndex);
+  // Calculate dynamic height based on max FILTERED events and weeks
+  const maxEvents = getMaxFilteredEventsPerDayInMonth(monthIndex);
   const weeksInMonth = getWeeksInMonth(monthIndex);
   
   // Height calculation - generous values to ensure all events fit:
