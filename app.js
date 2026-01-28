@@ -7,6 +7,44 @@
 // Store calendar instances
 const calendars = [];
 
+// Store active country filters (all enabled by default)
+const activeFilters = new Set();
+
+// Store all found flags
+let allFlags = [];
+
+// Flag to country name mapping
+const FLAG_NAMES = {
+  '🇦🇴': 'Angola',
+  '🇦🇹': 'Austria',
+  '🇧🇪': 'Belgium',
+  '🇧🇬': 'Bulgaria',
+  '🇨🇦': 'Canada',
+  '🇨🇭': 'Switzerland',
+  '🇨🇿': 'Czech Republic',
+  '🇩🇪': 'Germany',
+  '🇩🇿': 'Algeria',
+  '🇪🇪': 'Estonia',
+  '🇪🇸': 'Spain',
+  '🇫🇮': 'Finland',
+  '🇫🇷': 'France',
+  '🇬🇧': 'United Kingdom',
+  '🇭🇷': 'Croatia',
+  '🇭🇺': 'Hungary',
+  '🇮🇹': 'Italy',
+  '🇲🇽': 'Mexico',
+  '🇳🇱': 'Netherlands',
+  '🇵🇭': 'Philippines',
+  '🇵🇱': 'Poland',
+  '🇵🇹': 'Portugal',
+  '🇷🇴': 'Romania',
+  '🇸🇪': 'Sweden',
+  '🇸🇮': 'Slovenia',
+  '🇹🇭': 'Thailand',
+  '🇹🇷': 'Turkey',
+  '🇺🇸': 'United States'
+};
+
 // Month names in English
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April',
@@ -147,6 +185,267 @@ function convertEventsToTUIFormat(events) {
       }
     };
   });
+}
+
+/**
+ * Extract flag emoji from the beginning of a string
+ * Country flag emojis are made of two regional indicator symbols
+ */
+function extractFlag(title) {
+  if (!title) return null;
+  
+  // Country flags are composed of two regional indicator symbols (U+1F1E6 to U+1F1FF)
+  // They appear as the first 4 bytes (2 characters) when using spread operator
+  const chars = [...title];
+  if (chars.length >= 2) {
+    const firstTwo = chars[0] + chars[1];
+    // Check if it's a flag (regional indicator symbols range)
+    const code1 = chars[0].codePointAt(0);
+    const code2 = chars[1].codePointAt(0);
+    
+    // Regional indicator symbols are in range 0x1F1E6 to 0x1F1FF
+    if (code1 >= 0x1F1E6 && code1 <= 0x1F1FF && code2 >= 0x1F1E6 && code2 <= 0x1F1FF) {
+      return firstTwo;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get all unique flags from events
+ */
+function getAllFlags() {
+  const flags = new Set();
+  
+  window.EVENTS.forEach(event => {
+    const flag = extractFlag(event.title);
+    if (flag) {
+      flags.add(flag);
+    }
+  });
+  
+  return Array.from(flags).sort();
+}
+
+/**
+ * Check if an event should be visible based on current filters
+ */
+function isEventVisible(event) {
+  const flag = extractFlag(event.title);
+  
+  // If event has no flag, only show when ALL filters are active
+  if (!flag) {
+    return activeFilters.size === allFlags.length;
+  }
+  
+  // If event has a flag, check if that flag is in active filters
+  return activeFilters.has(flag);
+}
+
+/**
+ * Get filtered events for a month
+ */
+function getFilteredEventsForMonth(month) {
+  return getEventsForMonth(month).filter(isEventVisible);
+}
+
+/**
+ * Calculate max events per day for filtered events in a month
+ */
+function getMaxFilteredEventsPerDayInMonth(month) {
+  const firstOfMonth = new Date(CURRENT_YEAR, month, 1);
+  const lastOfMonth = new Date(CURRENT_YEAR, month + 1, 0);
+  
+  let firstDayOfWeek = firstOfMonth.getDay();
+  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  const visibleStart = new Date(firstOfMonth);
+  visibleStart.setDate(visibleStart.getDate() - firstDayOfWeek);
+  
+  let lastDayOfWeek = lastOfMonth.getDay();
+  lastDayOfWeek = lastDayOfWeek === 0 ? 6 : lastDayOfWeek - 1;
+  const daysToAdd = 6 - lastDayOfWeek;
+  const visibleEnd = new Date(lastOfMonth);
+  visibleEnd.setDate(visibleEnd.getDate() + daysToAdd);
+  
+  const totalDays = Math.round((visibleEnd - visibleStart) / (1000 * 60 * 60 * 24)) + 1;
+  const eventCounts = new Array(totalDays).fill(0);
+  
+  // Use filtered events
+  const monthEvents = getFilteredEventsForMonth(month);
+  
+  monthEvents.forEach(event => {
+    const startDate = new Date(event.start);
+    const endDate = new Date(event.end);
+    
+    for (let i = 0; i < totalDays; i++) {
+      const currentDate = new Date(visibleStart);
+      currentDate.setDate(visibleStart.getDate() + i);
+      if (currentDate >= startDate && currentDate <= endDate) {
+        eventCounts[i]++;
+      }
+    }
+  });
+  
+  return Math.max(...eventCounts, 0);
+}
+
+/**
+ * Recalculate calendar height based on filtered events
+ */
+function recalculateCalendarHeight(monthIndex) {
+  const container = document.getElementById(`calendar-${monthIndex}`);
+  if (!container) return;
+  
+  const maxEvents = getMaxFilteredEventsPerDayInMonth(monthIndex);
+  const weeksInMonth = getWeeksInMonth(monthIndex);
+  
+  const dayHeaderHeight = 30;
+  const eventHeight = 24;
+  const dayNumberHeight = 26;
+  const padding = 15;
+  
+  const rowHeight = dayNumberHeight + (maxEvents * eventHeight) + padding;
+  const calendarHeight = dayHeaderHeight + (weeksInMonth * rowHeight);
+  
+  container.style.height = (calendarHeight + 50) + 'px';
+}
+
+/**
+ * Refresh all calendars with current filter settings
+ */
+function refreshCalendars() {
+  calendars.forEach((calendar, monthIndex) => {
+    // Recalculate height based on filtered events
+    recalculateCalendarHeight(monthIndex);
+    
+    // Clear existing events
+    calendar.clear();
+    
+    // Add filtered events
+    const monthEvents = getFilteredEventsForMonth(monthIndex);
+    const tuiEvents = convertEventsToTUIFormat(monthEvents);
+    if (tuiEvents.length > 0) {
+      calendar.createEvents(tuiEvents);
+    }
+    
+    // Force calendar to re-render with new height
+    calendar.render();
+  });
+}
+
+/**
+ * Initialize the filter panel UI
+ */
+function initFilterPanel() {
+  allFlags = getAllFlags();
+  
+  // Initialize all filters as active
+  allFlags.forEach(flag => activeFilters.add(flag));
+  
+  const filterGrid = document.getElementById('filter-grid');
+  const filterToggle = document.getElementById('filter-toggle');
+  const filterDropdown = document.getElementById('filter-dropdown');
+  const filterArrow = filterToggle.querySelector('.filter-arrow');
+  const selectAllBtn = document.getElementById('select-all');
+  const selectNoneBtn = document.getElementById('select-none');
+  
+  // Populate flag grid
+  allFlags.forEach(flag => {
+    const item = document.createElement('div');
+    item.className = 'filter-item active';
+    item.textContent = flag;
+    item.dataset.flag = flag;
+    
+    item.addEventListener('click', () => {
+      if (activeFilters.has(flag)) {
+        activeFilters.delete(flag);
+        item.classList.remove('active');
+        item.classList.add('inactive');
+      } else {
+        activeFilters.add(flag);
+        item.classList.remove('inactive');
+        item.classList.add('active');
+      }
+      refreshCalendars();
+      updateFilterCount();
+    });
+    
+    // Show country name on hover
+    item.addEventListener('mouseenter', (e) => {
+      const countryName = FLAG_NAMES[flag] || 'Unknown';
+      showTooltip(countryName, e.clientX, e.clientY);
+    });
+    
+    item.addEventListener('mousemove', (e) => {
+      const countryName = FLAG_NAMES[flag] || 'Unknown';
+      showTooltip(countryName, e.clientX, e.clientY);
+    });
+    
+    item.addEventListener('mouseleave', () => {
+      hideTooltip();
+    });
+    
+    filterGrid.appendChild(item);
+  });
+  
+  // Toggle dropdown
+  filterToggle.addEventListener('click', () => {
+    filterDropdown.classList.toggle('hidden');
+    filterArrow.classList.toggle('open');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#filter-panel')) {
+      filterDropdown.classList.add('hidden');
+      filterArrow.classList.remove('open');
+    }
+  });
+  
+  // Select All button
+  selectAllBtn.addEventListener('click', () => {
+    allFlags.forEach(flag => activeFilters.add(flag));
+    document.querySelectorAll('.filter-item').forEach(item => {
+      item.classList.add('active');
+      item.classList.remove('inactive');
+    });
+    refreshCalendars();
+    updateFilterCount();
+  });
+  
+  // Select None button
+  selectNoneBtn.addEventListener('click', () => {
+    activeFilters.clear();
+    document.querySelectorAll('.filter-item').forEach(item => {
+      item.classList.remove('active');
+      item.classList.add('inactive');
+    });
+    refreshCalendars();
+    updateFilterCount();
+  });
+  
+  updateFilterCount();
+}
+
+/**
+ * Update the filter count badge
+ */
+function updateFilterCount() {
+  const filterHeader = document.getElementById('filter-toggle');
+  let countBadge = filterHeader.querySelector('.filter-count');
+  
+  const hiddenCount = allFlags.length - activeFilters.size;
+  
+  if (hiddenCount > 0) {
+    if (!countBadge) {
+      countBadge = document.createElement('span');
+      countBadge.className = 'filter-count';
+      filterHeader.appendChild(countBadge);
+    }
+    countBadge.textContent = `-${hiddenCount}`;
+  } else if (countBadge) {
+    countBadge.remove();
+  }
 }
 
 /**
@@ -347,8 +646,8 @@ function initCalendar(monthIndex) {
   // Set to the specific month
   calendar.setDate(new Date(CURRENT_YEAR, monthIndex, 1));
   
-  // Add events (clipped to this month only)
-  const monthEvents = getEventsForMonth(monthIndex);
+  // Add filtered events
+  const monthEvents = getFilteredEventsForMonth(monthIndex);
   const tuiEvents = convertEventsToTUIFormat(monthEvents);
   if (tuiEvents.length > 0) {
     calendar.createEvents(tuiEvents);
@@ -409,6 +708,9 @@ function setupHoverEvents() {
 function init() {
   console.log('Initializing yearly calendar...');
   
+  // Initialize filter panel first (before calendars, so we know all flags)
+  initFilterPanel();
+  
   // Create 12 calendars
   for (let i = 0; i < 12; i++) {
     const cal = initCalendar(i);
@@ -417,10 +719,11 @@ function init() {
     }
   }
   
-  // Setup hover events for image tooltips
+  // Setup hover events for tooltips
   setupHoverEvents();
   
   console.log(`${calendars.length} calendars initialized successfully.`);
+  console.log(`Found ${allFlags.length} country flags:`, allFlags.join(' '));
 }
 
 // Start on DOM load

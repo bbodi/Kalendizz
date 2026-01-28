@@ -95,6 +95,24 @@
     <span id="tooltip-text"></span>
   </div>
 
+  <!-- Country filter panel -->
+  <div id="filter-panel" class="filter-panel">
+    <div class="filter-header" id="filter-toggle">
+      <span class="filter-icon">🏳️</span>
+      <span class="filter-title">Filter</span>
+      <span class="filter-arrow">▼</span>
+    </div>
+    <div class="filter-dropdown hidden" id="filter-dropdown">
+      <div class="filter-actions">
+        <button id="select-all" class="filter-btn">All</button>
+        <button id="select-none" class="filter-btn">None</button>
+      </div>
+      <div class="filter-grid" id="filter-grid">
+        <!-- Flags will be inserted here by JS -->
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST UI Calendar JS -->
   <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
   
