@@ -1,0 +1,787 @@
+/**
+ * =====================================================
+ * EVENTS DEFINITION
+ * =====================================================
+ * 
+ * To add a new event, copy the template below
+ * and add it to the EVENTS array:
+ * 
+ * {
+ *   id: 'unique-id',            // Unique identifier
+ *   title: 'Event name',        // Display name
+ *   link: 'https://...',        // Link URL (opens on click)
+ *   image: 'https://...',       // Cover image URL (shows on hover)
+ *   start: '2026-01-15',        // Start date (YYYY-MM-DD)
+ *   end: '2026-01-15',          // End date (YYYY-MM-DD)
+ *   color: '#ffffff',           // Text color (optional)
+ *   backgroundColor: '#03bd9e'  // Background color (optional)
+ * }
+ * 
+ * =====================================================
+ */
+
+const EVENTS = [
+  {
+    id: 'evt-1',
+    title: '🇵🇱Exodus Kizomba Congress - IV Edition',
+    start: '2026-01-28',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/exodus-kizomba-congress-iv-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/541493749_814749354437661_1485437284540262103_n-1024x537.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-2',
+    title: '🇬🇧ABCD Festival 2026',
+    start: '2026-01-29',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/abcd-festival-2026-%e2%98%85-the-uks-biggest-3-days-sbk-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/495813682_1291098259690651_3833006027626830639_n-1024x379.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-3',
+    title: '🇺🇸New York SBKZ Congress',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/new-york-sbkz-congress/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/528600441_747310308224293_3831503578117871924_n-1024x379.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-4',
+    title: '🇨🇭BERN IS KIZOMBA WEEKEND 2026',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/bern-is-kizomba-weekend-2026-4th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/540595534_1238077408331206_2849132326752099888_n-1024x576.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-5',
+    title: 'HAKUNA MATATA FESTIVAL',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/hakuna-matata-festival-grenoble-city-iii/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/531448293_633249593141403_7077100280836580302_n-819x1024.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-6',
+    title: 'Urban Kiz Temptation Festival',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/urban-kiz-temptation-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/542757491_122267005490029136_6097713128918031722_n-819x1024.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-7',
+    title: 'Urban Kiz Temptation Bodensee',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/urban-kiz-temptation-festival-am-bodensee-3-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/542757491_122267005490029136_6097713128918031722_n-1-819x1024.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-8',
+    title: 'LATIN DREAMS FESTIVAL 2026',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/latin-dreams-festival-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/572018524_1358939112691379_4249799341609326264_n-1024x536.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-9',
+    title: "So'Nice Bachata & Kizomba Masters",
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/sonice-bachata-kizomba-masters-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/490902041_1241623380729002_4237435645217163362_n-1024x536.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-10',
+    title: 'SABOR A CABO VERDE Festival',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/sabor-a-cabo-verde-kizomba-festival-in-lisbon/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/504555308_1273483681453398_8865087791522336610_n-819x1024.jpg',
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-11',
+    title: 'Queens & Kings - Royals of Kiz',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/queens-kings-royals-of-kiz/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/499634672_122228689178216946_3821152380252513274_n-1024x379.jpeg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-12',
+    title: 'TA BOM African Rhythms',
+    start: '2026-01-30',
+    end: '2026-02-01',
+    link: 'https://kizomba-world.com/event/ta-bom-african-rhythms/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/488888333_999865425614460_2236531616901068959_n-1024x379.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-13',
+    title: '🇸🇮KIZZ KISS Festival 2026',
+    start: '2026-02-05',
+    end: '2026-02-08',
+    link: 'https://kizomba-world.com/event/kizz-kiss-festival-2026-dream-reloaded/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/500257989_1130711345755563_2677424750842130774_n-1024x533.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-14',
+    title: '🇩🇿Algeria Festival Bordeaux 5',
+    start: '2026-02-05',
+    end: '2026-02-08',
+    link: 'https://kizomba-world.com/event/alegria-festival-bordeaux-5/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/541695448_801293535745362_2800985698789975512_n-671x1024.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-15',
+    title: '🇨🇿PRAGUE KWANZA FESTIVAL 2026',
+    start: '2026-02-05',
+    end: '2026-02-08',
+    link: 'https://kizomba-world.com/event/prague-kwanza-festival-2026-official-8-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/492067253_1317635819826047_7590985807104887025_n-1024x536.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-16',
+    title: 'BE COOL FESTIVAL 4 Edition',
+    start: '2026-02-06',
+    end: '2026-02-08',
+    link: 'https://kizomba-world.com/event/be-cool-festival-4-edition-loup-garou/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/498130314_2527370037603037_7221174210956689629_n-1-1024x534.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-17',
+    title: '🇦🇴WE LOVE ANGOLA Trip 2026',
+    start: '2026-02-10',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/we-love-angola-kizomba-tourist-trip-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/480277085_122149929260383492_630689249345421622_n-1024x536.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-18',
+    title: '🇩🇪SAMSTAG DA MUXIMA IV',
+    start: '2026-02-13',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/samstag-da-muxima-iv/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/486452940_673150271815578_8149851464266408537_n-819x1024.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-19',
+    title: 'Kiz&Connect Weekender',
+    start: '2026-02-13',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/kizconnect-weekender/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2026/01/615284433_122150964236894053_2150358929333682753_n-3-1024x576.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-20',
+    title: 'MAGIC WINTER 2026 VIGO',
+    start: '2026-02-13',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/magic-winter-2026-vigo/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/544567605_642613348899531_4209675225197152413_n-1024x576.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-21',
+    title: 'Kizatours Afro Legacy Festival',
+    start: '2026-02-13',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/kizatours-dances-festival-edition-afro-legacy/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/485028198_939352735025416_7942292994800766363_n-1024x536.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-22',
+    title: 'Back 2 Basic Kizomba Winter',
+    start: '2026-02-13',
+    end: '2026-02-15',
+    link: 'https://kizomba-world.com/event/the-last-back-2-basic-kizomba-winter-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/514965555_1301946138605101_5902702015255730633_n-1024x534.jpg',
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-23',
+    title: 'BK Caribbean Sensation Cruise',
+    start: '2026-02-19',
+    end: '2026-02-22',
+    link: 'https://kizomba-world.com/event/bk-caribbean-sensation-cruise-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/473049737_122100052196725339_6221014015856323080_n-1024x536.jpg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-24',
+    title: '🇫🇷Wakanda Festival Paris 5th',
+    start: '2026-02-19',
+    end: '2026-02-22',
+    link: 'https://kizomba-world.com/event/wakanda-festival-2026-paris-5th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/480978890_942253341325715_8177712493088071091_n-1024x430.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-25',
+    title: 'FREEDOM ROMANTIC FESTIVAL 9',
+    start: '2026-02-20',
+    end: '2026-02-22',
+    link: 'https://kizomba-world.com/event/freedom-romantic-festival-9eme-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/518353100_1865155240740806_5236100282639269394_n-1024x532.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-26',
+    title: "L'immersion Caribbean Dream",
+    start: '2026-02-21',
+    end: '2026-02-22',
+    link: 'https://kizomba-world.com/event/limmersion-caribbean-dream-la-croisiere-sbk-dans-les-caraibes/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/485597444_651448190974864_5882259482024275207_n-1024x534.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-27',
+    title: '🇲🇽MKC + LOGIA 2026 SURVIVORS',
+    start: '2026-02-26',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/mkc-logia-2026-survivors/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/491913698_1263772281877942_506627479780281778_n-819x1024.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-28',
+    title: '🇭🇷Baila Conmigo Congress Latino',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/baila-conmigo-congress-latino-2026-official-event/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/487216417_122184286436266054_8231893921377046020_n-1024x577.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-29',
+    title: 'Eme Kia Festival',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/eme-kia-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/491088362_597933649950198_8937725698738044368_n-1024x534.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-30',
+    title: 'LATINA SOL KIZ FESTIVAL',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/latina-sol-kiz-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/536658878_122118417950946854_5142850053373189152_n-1024x576.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-31',
+    title: 'DIAMONDS FOREVER EDITION 3',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/diamonds-forever-edition-3/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/535552556_1836981443842315_3645824195186685364_n-1024x536.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-32',
+    title: 'VI SBK WEEKEND OURENSE',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://kizomba-world.com/event/vi-sbk-weekend-ourense-congreso-de-baile-afrolatino/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/500349285_1105665741599120_827803536514564508_n-724x1024.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-33',
+    title: '🇪🇪KIZOMBA TALLINN FESTIVAL 2026',
+    start: '2026-03-05',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/kizomba-tallinn-festival-2026-official-event/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/514088552_735069248900295_1230525090355696490_n-1024x581.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-34',
+    title: '🇧🇬15TH Intl Salsa Bachata Kizomba',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/15th-international-salsa-bachata-kizomba-congress/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/552384444_1391726736288298_853664064980720169_n-1024x577.jpeg',
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-35',
+    title: 'Boracay Latin Dance Festival',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/2026-boracay-latin-dance-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/499670545_1279848284142764_1764604651546050752_n.jpg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-36',
+    title: 'Djumbai Afro Festival 5th',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/djumbai-afro-festival-5th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/493093656_1233815015421718_6327881903742187709_n-1024x1024.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-37',
+    title: 'Royalkizz 5th Edition',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/royalkizz-5th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/487088164_10228820840094079_4900095985990768093_n-1024x533.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-38',
+    title: 'Eclipse Kizomba Festival 2nd',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/eclipse-kizomba-festival-2nd-edition-all-in-one/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/515506400_122210370482089342_526924187275302832_n-1024x536.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-39',
+    title: 'SHATTAKIZ WEEKENDER',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/shattakiz-weekender/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/528749724_2262685357478291_4588482001557100732_n-1024x534.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-40',
+    title: 'Je Veux Juste Danser 3',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/je-veux-juste-danser-3/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/544987985_24768356166121527_8533833420898444519_n-1024x859.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-41',
+    title: 'WEEK-END A DANSER IV',
+    start: '2026-03-06',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/week-end-a-danser-iv/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/544898011_122251791284235580_2849749885060139399_n-1024x576.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-42',
+    title: 'Kyiv Dance Festival GRAND',
+    start: '2026-03-07',
+    end: '2026-03-08',
+    link: 'https://kizomba-world.com/event/kyiv-dance-festival-grand-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/561156520_1218069577027663_3217454692809969430_n-1024x576.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-43',
+    title: '🇫🇷I WILL DANCE Festival 5',
+    start: '2026-03-12',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/i-will-dance-festival-5/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/501608130_1021584523497454_7652334188606921294_n-1024x536.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-44',
+    title: '🇷🇴Carpathian Latino Fest 5th',
+    start: '2026-03-12',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/carpathian-latino-fest-5th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/549394614_122176930904538761_4460024133327282813_n-1024x576.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-45',
+    title: 'Angolan Dances Weekend Romania',
+    start: '2026-03-13',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/angolan-dances-weekend-romania-2nd-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2026/01/603729261_859455946838305_869553867875428705_n-1024x641.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-46',
+    title: 'SEMPRE KIZOMBA SEMBA WEEKENDER',
+    start: '2026-03-13',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/sempre-kizomba-semba-weekender/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/555042771_801147319537386_9126548649145793946_n-1024x576.jpg',
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-47',
+    title: 'KARMA International Festival',
+    start: '2026-03-13',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/karma-international-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2026/01/616108154_1399102672227214_4480051643991144594_n-2-733x1024.jpg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-48',
+    title: 'KIM MADRID 2026',
+    start: '2026-03-13',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/kim-madrid-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/512672796_1146987507470366_9107148148690188516_n.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-49',
+    title: 'TENTAÇÃO WINTER Zurich',
+    start: '2026-03-13',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/tentacao-winter-experience-zurich/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/552490720_10228785373490794_1185221868849932898_n-1024x534.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-50',
+    title: 'Ski Latino 26 La Plagne',
+    start: '2026-03-14',
+    end: '2026-03-15',
+    link: 'https://kizomba-world.com/event/ski-latino-26-a-la-plagne/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/563432110_1298878538703401_7419520215659822633_n-1024x536.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-51',
+    title: '🇩🇪Wonderland Berlin Festival',
+    start: '2026-03-18',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/official-wonderland-berlin-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/549791344_755700050626948_7655708048844471884_n-1024x512.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-52',
+    title: '🇹🇷ISTANBUL WORLD DANCE CONGRESS',
+    start: '2026-03-18',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/istanbul-world-dance-congress/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/547762729_122174803220577624_8726416500825362454_n-1024x384.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-53',
+    title: 'La Kizomba Festival 2nd',
+    start: '2026-03-20',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/la-kizomba-festival-2nd-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/488079656_122124956948714213_2354779070397767733_n-1024x576.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-54',
+    title: 'LoveMI Kizomba Festival 2nd',
+    start: '2026-03-20',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/lovemi-kizomba-festival-2nd-edition-all-in-one/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/526653457_122174787416379000_7517335946403928163_n-1024x577.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-55',
+    title: 'Kizbomba Evolution 2026',
+    start: '2026-03-20',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/kizbomba-evolution-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/497125258_1250943027033594_7333242999221147121_n-1024x530.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-56',
+    title: 'Kizomba Festival London Spring',
+    start: '2026-03-20',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/kizomba-festival-london-uk-spring-edition-2/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/520569133_122174238122445246_4338348479865493542_n-1024x575.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-57',
+    title: 'LOVES KIZOMBA ORIGINS 2026',
+    start: '2026-03-20',
+    end: '2026-03-22',
+    link: 'https://kizomba-world.com/event/loves-kizomba-origins-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/487703890_122130248000675149_1767781404712637348_n-724x1024.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-58',
+    title: '🇮🇹SIN FRONTERAS Taormina Sicily',
+    start: '2026-03-26',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/sin-fronteras-dance-festival_taormina-sicily/',
+    image: null,
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-59',
+    title: '🇺🇸DC Cherry Blossom Kizomba',
+    start: '2026-03-26',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/dc-cherry-blossom-kizomba-festival-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/496925774_1214651397116394_3975199078060948576_n.jpg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-60',
+    title: '🇷🇴Cluj Kizomba Festival 8th',
+    start: '2026-03-26',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/cluj-kizomba-festival-8th-edition-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/531404583_1319059586891730_1322627657309668272_n-1024x537.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-61',
+    title: 'Black & White Intl Congress',
+    start: '2026-03-26',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/international-mambo-salsa-bachata-kizomba-congress-by-black-white/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/515437065_1117979167046328_7934209274925781775_n-1024x536.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-62',
+    title: 'KIZ RELAX MTP FESTIVAL 3',
+    start: '2026-03-27',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/kiz-relax-mtp-festival-3/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/543095813_122241082670242868_3623856054048782055_n-1024x576.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-63',
+    title: 'Dax Kizomba Weekender',
+    start: '2026-03-27',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/dax-kizomba-weekender/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/550926077_10235707733301341_7484576297760270608_n-1024x576.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-64',
+    title: 'Amsterdam KizzArena Spring',
+    start: '2026-03-27',
+    end: '2026-03-29',
+    link: 'https://kizomba-world.com/event/amsterdam-kizzarena-weekender-spring-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2026/01/558819835_1117639647167522_6055157178263752487_n-1024x986.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-65',
+    title: 'Suave Dance Festival Easter',
+    start: '2026-04-02',
+    end: '2026-04-05',
+    link: 'https://kizomba-world.com/event/viva-latin-easter-brussels/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/597861553_122109632787102503_4607205757282900797_n-1024x534.jpg',
+    backgroundColor: '#e67e22',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-66',
+    title: 'I Love Kizomba Rotterdam 2nd',
+    start: '2026-04-03',
+    end: '2026-04-05',
+    link: 'https://kizomba-world.com/event/i-love-kizomba-sensual-festival-rotterdam-2nd-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/559474675_1615954173169488_2020447630730124116_n-2.jpg',
+    backgroundColor: '#2ecc71',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-67',
+    title: 'Victoria Intl Kizomba 7th',
+    start: '2026-04-03',
+    end: '2026-04-05',
+    link: 'https://kizomba-world.com/event/victoria-international-kizomba-festival-7th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/518412439_122163228344546711_5077946707010456115_n-1024x1024.jpg',
+    backgroundColor: '#34495e',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-68',
+    title: 'Diamond Kizomba Festival',
+    start: '2026-04-03',
+    end: '2026-04-05',
+    link: 'https://kizomba-world.com/event/diamond-kizomba-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/09/493524528_122111003576832409_5849709409154574045_n-1024x534.jpg',
+    backgroundColor: '#e91e63',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-69',
+    title: 'Pau Royal Kizomba 3rd',
+    start: '2026-04-03',
+    end: '2026-04-05',
+    link: 'https://kizomba-world.com/event/pau-royal-kizomba-festival-3eme-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/518504254_10231223531716907_866190242714709714_n-1024x576.jpg',
+    backgroundColor: '#00bcd4',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-70',
+    title: 'Hot Tropical Dance Málaga',
+    start: '2026-04-08',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/hot-tropical-dance-malaga/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/505446990_1183945410202554_682145148841910254_n-817x1024.jpg',
+    backgroundColor: '#ff5722',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-71',
+    title: 'Coco Loco Pattaya Latin',
+    start: '2026-04-09',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/coco-loco-pattaya-latin-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2026/01/517594603_122116508588910792_2699562321340163909_n.jpg',
+    backgroundColor: '#673ab7',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-72',
+    title: 'Frenzy Easter Edition 2026',
+    start: '2026-04-09',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/frenzy-easter-edition-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/566208149_843773821512559_6743152380130309097_n-1024x534.jpg',
+    backgroundColor: '#795548',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-73',
+    title: 'TARRAXO SPRING LYON 4th',
+    start: '2026-04-09',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/tarraxo-spring-lyon-4th-edition/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/10/540970993_802583228763278_8223902592749535257_n-1024x534.jpg',
+    backgroundColor: '#e74c3c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-74',
+    title: 'KIZZ ME BACHAMORE Belgium',
+    start: '2026-04-10',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/belgium-kizz-me-bachamore-festival-2026/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/565671933_1133804948889162_3557652580408353260_n-1024x537.jpg',
+    backgroundColor: '#3498db',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-75',
+    title: 'Crazy Kiz Spring Italy 4.0',
+    start: '2026-04-10',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/crazy-kiz-spring-edition-italy-4-0/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/583324253_1163120049294485_3683689477407079947_n-819x1024.jpg',
+    backgroundColor: '#9b59b6',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-76',
+    title: 'Treveris Dance Festival',
+    start: '2026-04-10',
+    end: '2026-04-12',
+    link: 'https://kizomba-world.com/event/treveris-dance-festival/',
+    image: 'https://kizomba-world.com/wp-content/uploads/2025/11/580565707_122146479146723584_7761510578485224642_n-1024x534.jpg',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  }
+];
+
+// Do not modify the line below!
+window.EVENTS = EVENTS;

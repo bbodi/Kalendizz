@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 Yearly Calendar</title>
+  
+  <!-- TOAST UI Calendar CSS -->
+  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>2026 Yearly Calendar</h1>
+  </header>
+  
+  <main class="calendar-grid">
+    <!-- January -->
+    <div class="month-container">
+      <h2 class="month-title">January</h2>
+      <div id="calendar-0" class="calendar-instance"></div>
+    </div>
+    
+    <!-- February -->
+    <div class="month-container">
+      <h2 class="month-title">February</h2>
+      <div id="calendar-1" class="calendar-instance"></div>
+    </div>
+    
+    <!-- March -->
+    <div class="month-container">
+      <h2 class="month-title">March</h2>
+      <div id="calendar-2" class="calendar-instance"></div>
+    </div>
+    
+    <!-- April -->
+    <div class="month-container">
+      <h2 class="month-title">April</h2>
+      <div id="calendar-3" class="calendar-instance"></div>
+    </div>
+    
+    <!-- May -->
+    <div class="month-container">
+      <h2 class="month-title">May</h2>
+      <div id="calendar-4" class="calendar-instance"></div>
+    </div>
+    
+    <!-- June -->
+    <div class="month-container">
+      <h2 class="month-title">June</h2>
+      <div id="calendar-5" class="calendar-instance"></div>
+    </div>
+    
+    <!-- July -->
+    <div class="month-container">
+      <h2 class="month-title">July</h2>
+      <div id="calendar-6" class="calendar-instance"></div>
+    </div>
+    
+    <!-- August -->
+    <div class="month-container">
+      <h2 class="month-title">August</h2>
+      <div id="calendar-7" class="calendar-instance"></div>
+    </div>
+    
+    <!-- September -->
+    <div class="month-container">
+      <h2 class="month-title">September</h2>
+      <div id="calendar-8" class="calendar-instance"></div>
+    </div>
+    
+    <!-- October -->
+    <div class="month-container">
+      <h2 class="month-title">October</h2>
+      <div id="calendar-9" class="calendar-instance"></div>
+    </div>
+    
+    <!-- November -->
+    <div class="month-container">
+      <h2 class="month-title">November</h2>
+      <div id="calendar-10" class="calendar-instance"></div>
+    </div>
+    
+    <!-- December -->
+    <div class="month-container">
+      <h2 class="month-title">December</h2>
+      <div id="calendar-11" class="calendar-instance"></div>
+    </div>
+  </main>
+  
+  <!-- Event name tooltip on hover -->
+  <div id="event-tooltip" class="event-tooltip hidden">
+    <span id="tooltip-text"></span>
+  </div>
+
+  <!-- TOAST UI Calendar JS -->
+  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+  
+  <!-- Events data -->
+  <script src="events.js"></script>
+  
+  <!-- Main app -->
+  <script src="app.js"></script>
+</body>
+</html>
