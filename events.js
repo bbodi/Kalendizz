@@ -852,7 +852,7 @@ const EVENTS = [
   },
   {
     id: 'evt-77',
-    flag: '🇦🇱',
+    // flag: '🇦🇱',
     title: 'Albania Kizomba Festival',
     start: '2026-10-07',
     end: '2026-10-13',

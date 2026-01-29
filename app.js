@@ -390,7 +390,7 @@ function recalculateCalendarHeight(monthIndex) {
   const rowHeight = dayNumberHeight + (maxEvents * eventHeight) + padding;
   const calendarHeight = dayHeaderHeight + (weeksInMonth * rowHeight);
   
-  container.style.height = (calendarHeight + 50) + 'px';
+  container.style.height = (calendarHeight + 200) + 'px';
 }
 
 /**
