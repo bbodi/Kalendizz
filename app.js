@@ -177,19 +177,10 @@ function formatDate(date) {
  */
 function convertEventsToTUIFormat(events) {
   return events.map(event => {
-    // Extract flag from title if not already in event.flag
-    let flag = event.flag || extractFlag(event.title);
-    let title = event.title;
-    
-    // Remove flag emoji from title if present
-    if (flag && title.startsWith(flag)) {
-      title = title.substring(flag.length).trim();
-    }
-    
     return {
       id: event.id,
       calendarId: 'main',
-      title: title,
+      title: event.title,
       start: event.start,
       end: event.end,
       isAllday: true,
@@ -200,7 +191,7 @@ function convertEventsToTUIFormat(events) {
       // Custom properties for link and flag
       raw: {
         link: event.link,
-        flag: flag
+        flag: event.flag || null
       }
     };
   });
@@ -265,10 +256,8 @@ function getAllFlags() {
   const flags = new Set();
   
   window.EVENTS.forEach(event => {
-    // Use event.flag if available, otherwise extract from title
-    const flag = event.flag || extractFlag(event.title);
-    if (flag) {
-      flags.add(flag);
+    if (event.flag) {
+      flags.add(event.flag);
     }
   });
   
@@ -346,8 +335,8 @@ function isEventVisible(event) {
     return favorites.has(event.id);
   }
   
-  // Use event.flag if available, otherwise extract from title
-  const flag = event.flag || extractFlag(event.title);
+  // Use event.flag field
+  const flag = event.flag;
   
   // If event has no flag, only show when ALL filters are active
   if (!flag) {
