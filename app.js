@@ -24,6 +24,7 @@ let heartClickedRecently = false;
 
 // Flag to country name mapping
 const FLAG_NAMES = {
+  '🇦🇱': 'Albania',
   '🇦🇴': 'Angola',
   '🇦🇹': 'Austria',
   '🇧🇪': 'Belgium',
