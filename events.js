@@ -943,10 +943,54 @@ const EVENTS = [
   {
     id: 'evt-85',
     flag: '🇩🇪',
-    title: 'Deutschland Dance Festival ',
+    title: 'Deutschland Dance Festival',
     start: '2026-10-16',
     end: '2026-10-18',
     link: 'https://www.facebook.com/events/4371750189728791',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-86',
+    flag: '🇫🇷',
+    title: 'Multiverse Kizomba Congress',
+    start: '2026-04-02',
+    end: '2026-04-05',
+    link: 'https://www.facebook.com/events/1057939309131224/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-87',
+    flag: '🇦🇱',
+    title: 'Albania Afrolatin Festival',
+    start: '2026-05-06',
+    end: '2026-05-10',
+    link: 'https://www.facebook.com/events/3050258841818021/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-88',
+    flag: '🇨🇭',
+    title: 'Berlin Kizzes',
+    start: '2026-07-23',
+    end: '2026-07-26',
+    link: 'https://www.facebook.com/events/24242783972016833/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-89',
+    flag: '🇫🇷',
+    title: 'Battle Kizz Festival',
+    start: '2026-08-21',
+    end: '2026-08-23',
+    link: 'https://www.facebook.com/events/1769268763699137/',
     image: '',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
