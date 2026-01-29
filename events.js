@@ -901,7 +901,7 @@ const EVENTS = [
     flag: '🇭🇺',
     title: 'Hungarian Summer Salsa-Sensual Festival',
     start: '2026-07-07',
-    end: '2026-07-13',
+    end: '2026-07-12',
     link: 'https://www.facebook.com/events/1106028128090747/',
     image: '',
     backgroundColor: '#1abc9c',
