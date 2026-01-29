@@ -55,6 +55,26 @@ const FLAG_NAMES = {
   '🇺🇸': 'United States'
 };
 
+/**
+ * Convert emoji flag to ISO country code for flagcdn
+ */
+function emojiToCountryCode(emoji) {
+  if (!emoji) return null;
+  
+  // Map emoji flags to ISO country codes
+  const emojiToCode = {
+    '🇦🇱': 'al',
+    '🇦🇴': 'ao', '🇦🇹': 'at', '🇧🇪': 'be', '🇧🇬': 'bg', '🇨🇦': 'ca',
+    '🇨🇭': 'ch', '🇨🇿': 'cz', '🇩🇪': 'de', '🇩🇿': 'dz', '🇪🇪': 'ee',
+    '🇪🇸': 'es', '🇫🇮': 'fi', '🇫🇷': 'fr', '🇬🇧': 'gb', '🇭🇷': 'hr',
+    '🇭🇺': 'hu', '🇮🇹': 'it', '🇲🇽': 'mx', '🇳🇱': 'nl', '🇵🇭': 'ph',
+    '🇵🇱': 'pl', '🇵🇹': 'pt', '🇷🇴': 'ro', '🇸🇪': 'se', '🇸🇮': 'si',
+    '🇹🇭': 'th', '🇹🇷': 'tr', '🇺🇸': 'us'
+  };
+  
+  return emojiToCode[emoji] || null;
+}
+
 // Month names in English
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April',
@@ -220,25 +240,6 @@ function extractFlag(title) {
     }
   }
   return null;
-}
-
-/**
- * Convert emoji flag to ISO country code for flagcdn
- */
-function emojiToCountryCode(emoji) {
-  if (!emoji) return null;
-  
-  // Map emoji flags to ISO country codes
-  const emojiToCode = {
-    '🇦🇴': 'ao', '🇦🇹': 'at', '🇧🇪': 'be', '🇧🇬': 'bg', '🇨🇦': 'ca',
-    '🇨🇭': 'ch', '🇨🇿': 'cz', '🇩🇪': 'de', '🇩🇿': 'dz', '🇪🇪': 'ee',
-    '🇪🇸': 'es', '🇫🇮': 'fi', '🇫🇷': 'fr', '🇬🇧': 'gb', '🇭🇷': 'hr',
-    '🇭🇺': 'hu', '🇮🇹': 'it', '🇲🇽': 'mx', '🇳🇱': 'nl', '🇵🇭': 'ph',
-    '🇵🇱': 'pl', '🇵🇹': 'pt', '🇷🇴': 'ro', '🇸🇪': 'se', '🇸🇮': 'si',
-    '🇹🇭': 'th', '🇹🇷': 'tr', '🇺🇸': 'us'
-  };
-  
-  return emojiToCode[emoji] || null;
 }
 
 /**
