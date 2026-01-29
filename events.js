@@ -975,7 +975,7 @@ const EVENTS = [
   },
   {
     id: 'evt-88',
-    flag: '🇨🇭',
+    flag: '🇩🇪',
     title: 'Berlin Kizzes',
     start: '2026-07-23',
     end: '2026-07-26',
