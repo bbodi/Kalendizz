@@ -852,10 +852,10 @@ const EVENTS = [
   },
   {
     id: 'evt-77',
-    // flag: '🇦🇱',
+    flag: '🇦🇱',
     title: 'Albania Kizomba Festival',
     start: '2026-10-07',
-    end: '2026-10-13',
+    end: '2026-10-11',
     link: 'https://www.facebook.com/events/1814520295937385/',
     image: '',
     backgroundColor: '#1abc9c',
