@@ -895,6 +895,50 @@ const EVENTS = [
     image: '',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
+  },
+  {
+    id: 'evt-81',
+    flag: '🇭🇺',
+    title: 'Hungarian Summer Salsa-Sensual Festival',
+    start: '2026-07-07',
+    end: '2026-07-13',
+    link: 'https://www.facebook.com/events/1106028128090747/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-82',
+    flag: '🇭🇺',
+    title: 'MouVement',
+    start: '2026-05-15',
+    end: '2026-05-17',
+    link: 'https://www.facebook.com/events/659246327094252',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-83',
+    flag: '🇭🇺',
+    title: 'Dance Casa',
+    start: '2026-08-27',
+    end: '2026-08-30',
+    link: 'https://www.facebook.com/events/813006214551887',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-84',
+    flag: '🇭🇺',
+    title: 'All Stars',
+    start: '2026-11-05',
+    end: '2026-11-08',
+    link: 'https://www.facebook.com/events/1191704292809977',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
   }
 ];
 
