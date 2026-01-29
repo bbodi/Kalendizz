@@ -876,7 +876,7 @@ const EVENTS = [
     id: 'evt-79',
     flag: '🇷🇴',
     title: 'Alchemey Kizomba Festival',
-    start: '2026-7-31',
+    start: '2026-07-31',
     end: '2026-08-02',
     link: 'https://www.facebook.com/events/1603262817709390',
     image: '',
