@@ -939,6 +939,17 @@ const EVENTS = [
     image: '',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
+  },
+  {
+    id: 'evt-85',
+    flag: '🇩🇪',
+    title: 'Deutschland Dance Festival ',
+    start: '2026-10-16',
+    end: '2026-10-18',
+    link: 'https://www.facebook.com/events/4371750189728791',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
   }
 ];
 
