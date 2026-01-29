@@ -110,7 +110,8 @@ const EVENTS = [
   },
   {
     id: 'evt-9',
-    title: "🇫🇷So'Nice Bachata & Kizomba Masters",
+    title: "So'Nice Bachata & Kizomba Masters",
+    flag: '🇫🇷',
     start: '2026-01-30',
     end: '2026-02-01',
     link: 'https://www.facebook.com/events/2772257682983062',
@@ -680,6 +681,7 @@ const EVENTS = [
     title: 'Black & White Intl Congress',
     start: '2026-03-26',
     end: '2026-03-29',
+    flag: '🇦🇹',
     link: 'https://www.facebook.com/events/531753026187350',
     image: 'https://kizomba-world.com/wp-content/uploads/2025/09/515437065_1117979167046328_7934209274925781775_n-1024x536.jpg',
     backgroundColor: '#e74c3c',
