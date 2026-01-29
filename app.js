@@ -219,30 +219,6 @@ function convertEventsToTUIFormat(events) {
 }
 
 /**
- * Extract flag emoji from the beginning of a string
- * Country flag emojis are made of two regional indicator symbols
- */
-function extractFlag(title) {
-  if (!title) return null;
-  
-  // Country flags are composed of two regional indicator symbols (U+1F1E6 to U+1F1FF)
-  // They appear as the first 4 bytes (2 characters) when using spread operator
-  const chars = [...title];
-  if (chars.length >= 2) {
-    const firstTwo = chars[0] + chars[1];
-    // Check if it's a flag (regional indicator symbols range)
-    const code1 = chars[0].codePointAt(0);
-    const code2 = chars[1].codePointAt(0);
-    
-    // Regional indicator symbols are in range 0x1F1E6 to 0x1F1FF
-    if (code1 >= 0x1F1E6 && code1 <= 0x1F1FF && code2 >= 0x1F1E6 && code2 <= 0x1F1FF) {
-      return firstTwo;
-    }
-  }
-  return null;
-}
-
-/**
  * Get flagcdn URL for a flag emoji
  */
 function getFlagImageUrl(flagEmoji) {
