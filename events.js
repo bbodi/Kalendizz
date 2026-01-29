@@ -849,6 +849,50 @@ const EVENTS = [
     image: 'https://kizomba-world.com/wp-content/uploads/2025/11/580565707_122146479146723584_7761510578485224642_n-1024x534.jpg',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
+  },
+  {
+    id: 'evt-77',
+    flag: '🇦🇱',
+    title: 'Albania Kizomba Festival',
+    start: '2026-10-7',
+    end: '2026-10-13',
+    link: 'https://www.facebook.com/events/1814520295937385/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-78',
+    flag: '🇳🇱',
+    title: 'FlavourKizz',
+    start: '2026-11-12',
+    end: '2026-11-15',
+    link: 'https://www.facebook.com/events/1609516733388732',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-79',
+    flag: '🇷🇴',
+    title: 'Alchemey Kizomba Festival',
+    start: '2026-7-31',
+    end: '2026-8-2',
+    link: 'https://www.facebook.com/events/1603262817709390',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-80',
+    flag: '🇦🇹',
+    title: 'Crystal Kizomba Congress',
+    start: '2026-4-16',
+    end: '2026-4-19',
+    link: 'https://www.facebook.com/events/766742382918080',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
   }
 ];
 
