@@ -994,6 +994,28 @@ const EVENTS = [
     image: '',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
+  },
+  {
+    id: 'evt-90',
+    flag: '🇮🇹',
+    title: 'SunKiz Festival',
+    start: '2026-06-05',
+    end: '2026-06-07',
+    link: 'https://www.facebook.com/events/4280029018898737/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-91',
+    flag: '🇷🇴',
+    title: 'Joy Kizz',
+    start: '2026-06-12',
+    end: '2026-06-14',
+    link: 'https://www.facebook.com/events/4328898117394416/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
   }
 ];
 
