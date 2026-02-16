@@ -1016,6 +1016,83 @@ const EVENTS = [
     image: '',
     backgroundColor: '#1abc9c',
     color: '#ffffff'
+  },
+  {
+    id: 'evt-92',
+    flag: '🇷🇴',
+    title: 'Joy Kizz Bootcamp & Promo Party',
+    start: '2026-02-28',
+    end: '2026-02-28',
+    link: 'https://www.facebook.com/events/s/joy-kizz-urbankiz-bootcamp-pro/747899945035888/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-93',
+    flag: '🇷🇴',
+    title: 'Urban Joy - Birthday Edition',
+    start: '2026-04-03',
+    end: '2026-04-05',
+    link: 'https://www.facebook.com/events/s/urban-joy-birthday-edition/1987695968836763/',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-94',
+    flag: '🇩🇪',
+    title: 'DonauKizz',
+    start: '2026-02-27',
+    end: '2026-03-01',
+    link: 'https://www.facebook.com/events/31466185123026557',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-95',
+    flag: '🇧🇬',
+    title: 'Style Bender',
+    start: '2026-02-20',
+    end: '2026-02-22',
+    link: 'https://www.facebook.com/events/328122736760325',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-96',
+    flag: '🇭🇷',
+    title: 'The Kizomba Experience Croatia',
+    start: '2026-09-17',
+    end: '2026-09-20',
+    link: 'https://www.facebook.com/events/1269254358228777',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-97',
+    flag: '🇭🇷',
+    title: 'Okiz Festival',
+    start: '2026-05-20',
+    end: '2026-05-24',
+    link: 'https://www.facebook.com/events/688099924154517',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
+  },
+  {
+    id: 'evt-98',
+    flag: '🇫🇷',
+    title: 'Paris Kizomba Congress',
+    start: '2026-11-19',
+    end: '2026-11-22',
+    link: 'https://www.facebook.com/events/789837604058035',
+    image: '',
+    backgroundColor: '#1abc9c',
+    color: '#ffffff'
   }
 ];
 
