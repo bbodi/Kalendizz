@@ -2086,6 +2086,18 @@ const EVENTS = [
     tags: ["Kizomba","Semba"]
   },
   {
+    id: "evt-276",
+    flag: "🇩🇪",
+    title: "KizzEssence All-in-One 2027",
+    start: "2027-01-08",
+    end: "2027-01-10",
+    link: "https://kizomba-world.com/event/kizzessence-all-in-one-2027/",
+    backgroundColor: "#3498db",
+    color: "#ffffff",
+    location: "Germany",
+    tags: ["All in One","Kizomba","Tarraxo","Urbankiz"]
+  },
+  {
     id: "evt-185",
     flag: "🇮🇹",
     title: "Liguria Kizomba Congress 2027 - Partner Ufficiale Extreme Latin Congress",
@@ -2470,18 +2482,6 @@ const EVENTS = [
     tags: ["All in One","Kizomba","Semba","Tarraxo","Urbankiz"]
   },
   {
-    id: "evt-219",
-    flag: "🇫🇷",
-    title: "KIZOMBA TALLINN FESTIVAL 2027- Official Event",
-    start: "2027-02-25",
-    end: "2027-03-01",
-    link: "https://kizomba-world.com/event/kizomba-tallinn-festival-2027-official-event/",
-    backgroundColor: "#e67e22",
-    color: "#ffffff",
-    location: "France",
-    tags: ["Competition","Kizomba","Urbankiz"]
-  },
-  {
     id: "evt-222",
     flag: "🇩🇪",
     title: "CLOUDKIZ Weekender 26-28 February 2027",
@@ -2530,18 +2530,6 @@ const EVENTS = [
     tags: ["All in One","Kizomba","Semba","Tarraxo","Urbankiz"]
   },
   {
-    id: "evt-223",
-    flag: "🇳🇱",
-    title: "LOVES KIZOMBA ORIGINS 2027 🌺🐝",
-    start: "2027-03-04",
-    end: "2027-03-07",
-    link: "https://kizomba-world.com/event/loves-kizomba-origins-2027-%f0%9f%8c%ba%f0%9f%90%9d/",
-    backgroundColor: "#00bcd4",
-    color: "#ffffff",
-    location: "Netherlands",
-    tags: ["All in One","Kizomba","⁠⁠Pool Party","Semba","Tarraxo","Urbankiz"]
-  },
-  {
     id: "evt-226",
     flag: "🇧🇪",
     title: "Royalkizz 6th Edition",
@@ -2588,6 +2576,18 @@ const EVENTS = [
     color: "#ffffff",
     location: "France",
     tags: ["All in One","Kizomba","Semba","Tarraxo","Urbankiz"]
+  },
+  {
+    id: "evt-219",
+    flag: "🇪🇪",
+    title: "KIZOMBA TALLINN FESTIVAL 2027- Official Event",
+    start: "2027-03-11",
+    end: "2027-03-15",
+    link: "https://kizomba-world.com/event/kizomba-tallinn-festival-2027-official-event/",
+    backgroundColor: "#e67e22",
+    color: "#ffffff",
+    location: "Estonia",
+    tags: ["Competition","Kizomba","Urbankiz"]
   },
   {
     id: "evt-229",
@@ -2660,6 +2660,18 @@ const EVENTS = [
     color: "#ffffff",
     location: "Estonia",
     tags: ["All in One","Kizomba","Urbankiz"]
+  },
+  {
+    id: "evt-223",
+    flag: "🇪🇸",
+    title: "LOVES KIZOMBA ORIGINS 2027 🌺🐝",
+    start: "2027-03-19",
+    end: "2027-03-22",
+    link: "https://kizomba-world.com/event/loves-kizomba-origins-2027-%f0%9f%8c%ba%f0%9f%90%9d/",
+    backgroundColor: "#00bcd4",
+    color: "#ffffff",
+    location: "Spain",
+    tags: ["All in One","Kizomba","⁠⁠Pool Party","Semba","Tarraxo","Urbankiz"]
   },
   {
     id: "evt-235",
@@ -2852,6 +2864,18 @@ const EVENTS = [
     color: "#ffffff",
     location: "France",
     tags: ["All in One","Tarraxo","Urbankiz"]
+  },
+  {
+    id: "evt-275",
+    flag: "🇧🇪",
+    title: "BELGIUM \"KIZZ ME BACHAMORE\" FESTIVAL 2027",
+    start: "2027-04-09",
+    end: "2027-04-12",
+    link: "https://kizomba-world.com/event/belgium-kizz-me-bachamore-festival-2027/",
+    backgroundColor: "#e74c3c",
+    color: "#ffffff",
+    location: "Belgium",
+    tags: ["Bachata","Kizomba","Urbankiz","Zouk"]
   },
   {
     id: "evt-251",
@@ -3140,30 +3164,6 @@ const EVENTS = [
     color: "#ffffff",
     location: "Switzerland",
     tags: ["Kizomba","Semba"]
-  },
-  {
-    id: "evt-275",
-    flag: "🇦🇱",
-    title: "BELGIUM \"KIZZ ME BACHAMORE\" FESTIVAL 2027",
-    start: "2027-06-17",
-    end: "2027-06-21",
-    link: "https://kizomba-world.com/event/belgium-kizz-me-bachamore-festival-2027/",
-    backgroundColor: "#e74c3c",
-    color: "#ffffff",
-    location: "Albania",
-    tags: ["Bachata","Kizomba","Urbankiz","Zouk"]
-  },
-  {
-    id: "evt-276",
-    flag: "🇩🇪",
-    title: "KizzEssence All-in-One 2027",
-    start: "2027-07-15",
-    end: "2027-07-18",
-    link: "https://kizomba-world.com/event/kizzessence-all-in-one-2027/",
-    backgroundColor: "#3498db",
-    color: "#ffffff",
-    location: "Germany",
-    tags: ["All in One","Kizomba","Tarraxo","Urbankiz"]
   },
   {
     id: "evt-277",

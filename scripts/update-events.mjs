@@ -87,6 +87,27 @@ const MANUAL_COUNTRY = [
   ['kyiv dance festival', 'Ukraine']
 ];
 
+/* Known-good corrections for events whose site header/metadata
+   contradicts the page description or external sources
+   (verified 2026-10-24). Keyed by decoded event slug. */
+const OVERRIDES = {
+  'kizomba-tallinn-festival-2027-official-event': {
+    start: '2027-03-11', end: '2027-03-15', country: 'Estonia'
+  },
+  'loves-kizomba-origins-2027-🌺🐝': {
+    start: '2027-03-19', end: '2027-03-22', country: 'Spain'
+  },
+  'belgium-kizz-me-bachamore-festival-2027': {
+    start: '2027-04-09', end: '2027-04-12', country: 'Belgium'
+  },
+  'kizzessence-all-in-one-2027': {
+    start: '2027-01-08', end: '2027-01-10', country: 'Germany'
+  },
+  'kasselkiz-urban-kizomba-weekender-in-kassel': {
+    start: '2026-10-30', end: '2026-11-01', country: 'Germany'
+  }
+};
+
 const FALLBACK_COLORS = [
   '#e74c3c', '#3498db', '#9b59b6', '#1abc9c', '#e67e22', '#2ecc71',
   '#34495e', '#e91e63', '#00bcd4', '#ff5722', '#673ab7', '#795548'
@@ -198,12 +219,16 @@ let skippedPast = 0, skippedDup = 0, noCountry = 0;
 
 for (const ev of apiEvents) {
   if (ev.hide_from_listings === true) continue;
-  const start = (ev.start_date || '').slice(0, 10);
-  if (!start || start < today) { skippedPast++; continue; }
 
   const title = decodeEntities(ev.title).trim();
   const link = ev.url;
   const slug = slugOf(link);
+
+  // Known-good corrections for events whose site header/metadata
+  // contradicts the page description or external sources.
+  const ov = OVERRIDES[slug] || null;
+  let start = ov && ov.start ? ov.start : (ev.start_date || '').slice(0, 10);
+  if (!start || start < today) { skippedPast++; continue; }
   if (usedSlugs.has(slug)) { skippedDup++; continue; }
 
   const nt = norm(title);
@@ -216,10 +241,12 @@ for (const ev of apiEvents) {
   });
   if (dup) { skippedDup++; continue; }
 
-  const v = ev.venue;
-  let country = null;
-  if (v && !Array.isArray(v) && v.country) country = v.country;
-  else if (Array.isArray(v) && v.length && v[0].country) country = v[0].country;
+  let country = ov && ov.country ? ov.country : null;
+  if (!country) {
+    const v = ev.venue;
+    if (v && !Array.isArray(v) && v.country) country = v.country;
+    else if (Array.isArray(v) && v.length && v[0].country) country = v[0].country;
+  }
   if (!country) country = findCountryInText(stripHtml(ev.description || ''));
   if (!country) country = manualCountryFor(title);
   if (!country) noCountry++;
@@ -230,7 +257,7 @@ for (const ev of apiEvents) {
     flag: flag,
     title: title,
     start: start,
-    end: (ev.end_date || '').slice(0, 10) || start,
+    end: ov && ov.end ? ov.end : ((ev.end_date || '').slice(0, 10) || start),
     link: link,
     backgroundColor: FALLBACK_COLORS[colorIdx++ % FALLBACK_COLORS.length],
     color: '#ffffff'
