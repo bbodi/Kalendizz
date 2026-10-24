@@ -323,6 +323,42 @@
       nowBtn.classList.toggle('hidden',
         !root.querySelector('.weekend-row.current:not(.hidden)'));
     }
+    updateMonthNavActive();
+  }
+
+  /* ---------------- scrollspy: highlight the month in view ---------------- */
+
+  let navActiveKey = null;
+
+  function updateMonthNavActive() {
+    if (!monthNav) return;
+    const navLine = Math.max(monthNav.getBoundingClientRect().bottom, 8);
+    const sections = Array.from(
+      root.querySelectorAll('.month-section:not(.hidden)'));
+    let active = null;
+    // The active month is the last one whose top edge has passed
+    // the bottom of the sticky nav.
+    for (const sec of sections) {
+      if (sec.getBoundingClientRect().top <= navLine + 8) {
+        active = sec.dataset.month;
+      } else {
+        break;
+      }
+    }
+    if (!active && sections.length) active = sections[0].dataset.month;
+    if (!active || active === navActiveKey) return;
+    navActiveKey = active;
+
+    monthNav.querySelectorAll('.nav-month').forEach(btn => {
+      const on = btn.dataset.month === active;
+      btn.classList.toggle('active', on);
+      if (on) {
+        // Keep the highlighted pill visible in the horizontal strip.
+        const target = btn.offsetLeft -
+          (monthNav.clientWidth - btn.clientWidth) / 2;
+        monthNav.scrollTo({ left: target, behavior: 'smooth' });
+      }
+    });
   }
 
   /* ---------------- filtering ---------------- */
@@ -782,12 +818,23 @@
     applyFilters();
     updatePastToggle();
 
+    // Scrollspy: highlight the month currently under the sticky nav.
+    let navScrollRaf = null;
+    window.addEventListener('scroll', () => {
+      if (navScrollRaf) return;
+      navScrollRaf = requestAnimationFrame(() => {
+        navScrollRaf = null;
+        updateMonthNavActive();
+      });
+    }, { passive: true });
+
     let resizeRaf = null;
     window.addEventListener('resize', () => {
       cancelAnimationFrame(resizeRaf);
       resizeRaf = requestAnimationFrame(() => {
         naturalWidthCache.clear();
         packAllChips();
+        updateMonthNavActive();
       });
     });
   }

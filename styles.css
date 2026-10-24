@@ -180,6 +180,14 @@ body {
   box-shadow: 0 2px 10px var(--glow);
 }
 
+/* Scrollspy: the month currently in view */
+.month-nav .nav-month.active {
+  color: #fff;
+  background: linear-gradient(90deg, var(--violet), var(--pink));
+  border-color: transparent;
+  box-shadow: 0 2px 10px var(--glow);
+}
+
 /* ---------- Calendar layout: 3 month cards per row ---------- */
 .calendar-root {
   display: grid;
