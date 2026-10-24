@@ -1,939 +1,943 @@
 /**
  * =====================================================
- * TUI Calendar - Yearly Calendar Application
+ * Hand-built weekend calendar — no calendar library.
  * =====================================================
+ *
+ * Reads window.EVENTS (events.js) and renders a compact
+ * calendar organised by WEEKENDS instead of single days:
+ *
+ *   Month section
+ *     Weekend row  (Fri – Sun)
+ *       Event chips (flag + name, colored)
+ *
+ * Extras: country filter panel, favorites (localStorage),
+ * "this weekend" highlight, canceled-event styling.
  */
 
-// Store calendar instances
-const calendars = [];
+(function () {
+  'use strict';
 
-// Store active country filters (all enabled by default)
-const activeFilters = new Set();
+  const MONTHS = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
-// Store all found flags
-let allFlags = [];
-
-// Store favorite event IDs (persisted to localStorage)
-let favorites = new Set();
-
-// Filter mode for favorites (null = show all, true = show only favorites)
-let showOnlyFavorites = false;
-
-// Flag to prevent link opening when clicking heart
-let heartClickedRecently = false;
-
-// Flag to country name mapping
-const FLAG_NAMES = {
-  '🇦🇱': 'Albania',
-  '🇦🇴': 'Angola',
-  '🇦🇹': 'Austria',
-  '🇧🇪': 'Belgium',
-  '🇧🇬': 'Bulgaria',
-  '🇨🇦': 'Canada',
-  '🇨🇭': 'Switzerland',
-  '🇨🇿': 'Czech Republic',
-  '🇩🇪': 'Germany',
-  '🇩🇿': 'Algeria',
-  '🇪🇪': 'Estonia',
-  '🇪🇸': 'Spain',
-  '🇫🇮': 'Finland',
-  '🇫🇷': 'France',
-  '🇬🇧': 'United Kingdom',
-  '🇭🇷': 'Croatia',
-  '🇭🇺': 'Hungary',
-  '🇮🇹': 'Italy',
-  '🇲🇽': 'Mexico',
-  '🇳🇱': 'Netherlands',
-  '🇵🇭': 'Philippines',
-  '🇵🇱': 'Poland',
-  '🇵🇹': 'Portugal',
-  '🇷🇴': 'Romania',
-  '🇸🇪': 'Sweden',
-  '🇸🇮': 'Slovenia',
-  '🇹🇭': 'Thailand',
-  '🇹🇷': 'Turkey',
-  '🇺🇸': 'United States'
-};
-
-/**
- * Convert emoji flag to ISO country code for flagcdn
- */
-function emojiToCountryCode(emoji) {
-  if (!emoji) return null;
-  
-  // Map emoji flags to ISO country codes
-  const emojiToCode = {
-    '🇦🇱': 'al',
-    '🇦🇴': 'ao', '🇦🇹': 'at', '🇧🇪': 'be', '🇧🇬': 'bg', '🇨🇦': 'ca',
-    '🇨🇭': 'ch', '🇨🇿': 'cz', '🇩🇪': 'de', '🇩🇿': 'dz', '🇪🇪': 'ee',
-    '🇪🇸': 'es', '🇫🇮': 'fi', '🇫🇷': 'fr', '🇬🇧': 'gb', '🇭🇷': 'hr',
-    '🇭🇺': 'hu', '🇮🇹': 'it', '🇲🇽': 'mx', '🇳🇱': 'nl', '🇵🇭': 'ph',
-    '🇵🇱': 'pl', '🇵🇹': 'pt', '🇷🇴': 'ro', '🇸🇪': 'se', '🇸🇮': 'si',
-    '🇹🇭': 'th', '🇹🇷': 'tr', '🇺🇸': 'us'
+  const FLAG_NAMES = {
+    '🇦🇱': 'Albania', '🇦🇪': 'United Arab Emirates', '🇦🇴': 'Angola',
+    '🇦🇹': 'Austria', '🇧🇦': 'Bosnia and Herzegovina', '🇧🇪': 'Belgium',
+    '🇧🇬': 'Bulgaria', '🇨🇦': 'Canada', '🇨🇻': 'Cape Verde', '🇨🇭': 'Switzerland',
+    '🇨🇿': 'Czech Republic', '🇩🇪': 'Germany', '🇩🇰': 'Denmark', '🇩🇿': 'Algeria',
+    '🇪🇪': 'Estonia', '🇪🇸': 'Spain', '🇫🇮': 'Finland', '🇫🇷': 'France',
+    '🇬🇧': 'United Kingdom', '🇭🇷': 'Croatia', '🇭🇺': 'Hungary', '🇮🇩': 'Indonesia',
+    '🇮🇹': 'Italy', '🇯🇲': 'Jamaica', '🇰🇿': 'Kazakhstan', '🇱🇹': 'Lithuania',
+    '🇱🇺': 'Luxembourg', '🇱🇻': 'Latvia', '🇲🇦': 'Morocco', '🇲🇽': 'Mexico',
+    '🇳🇱': 'Netherlands', '🇳🇴': 'Norway', '🇵🇭': 'Philippines', '🇵🇱': 'Poland',
+    '🇵🇹': 'Portugal', '🇷🇴': 'Romania', '🇸🇪': 'Sweden', '🇸🇮': 'Slovenia',
+    '🇸🇳': 'Senegal', '🇹🇭': 'Thailand', '🇹🇷': 'Turkey', '🇺🇸': 'United States',
+    '🇻🇳': 'Vietnam'
   };
-  
-  return emojiToCode[emoji] || null;
-}
 
-// Month names in English
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December'
-];
+  /*
+   * Bubble color per country, generated with OKLab color science:
+   *   - hue constrained to the country's flag colors,
+   *   - pairwise perceptual distance maximized (weighted by event count,
+   *     so countries with many festivals get the most distinct colors),
+   *   - kept away from the page background and accents.
+   * France / UK / US are 0.22 / 0.17 / 0.17 ΔE(OKLab) apart.
+   */
+  const COUNTRY_COLORS = {
+    '🇦🇱': '#cc2964', // Albania - red
+    '🇦🇪': '#0f5e3a', // United Arab Emirates - flag green
+    '🇦🇴': '#4e0704', // Angola - red/black
+    '🇦🇹': '#9c1a0a', // Austria - red
+    '🇧🇦': '#0b3d91', // Bosnia and Herzegovina - blue
+    '🇧🇪': '#16181d', // Belgium - black
+    '🇧🇬': '#18520e', // Bulgaria - green
+    '🇨🇦': '#ae374e', // Canada - red
+    '🇨🇻': '#0068a5', // Cape Verde - blue
+    '🇨🇭': '#770b20', // Switzerland - red
+    '🇨🇿': '#005152', // Czech Republic - teal blue
+    '🇩🇪': '#8a4a10', // Germany - flag gold
+    '🇩🇰': '#ce2960', // Denmark - red
+    '🇩🇿': '#2d4301', // Algeria - green
+    '🇪🇪': '#007268', // Estonia - teal blue
+    '🇪🇸': '#e12929', // Spain - red
+    '🇫🇮': '#007177', // Finland - blue
+    '🇫🇷': '#1a46e5', // France - blue
+    '🇬🇧': '#0a3459', // United Kingdom - navy
+    '🇭🇷': '#b21f50', // Croatia - red
+    '🇭🇺': '#68610f', // Hungary - olive green
+    '🇮🇩': '#a21734', // Indonesia - red
+    '🇮🇹': '#177828', // Italy - green
+    '🇯🇲': '#146b3a', // Jamaica - green
+    '🇰🇿': '#1f7a9c', // Kazakhstan - sky blue
+    '🇱🇹': '#454600', // Lithuania - olive
+    '🇱🇺': '#07555e', // Luxembourg - cyan
+    '🇱🇻': '#911955', // Latvia - carmine red
+    '🇲🇦': '#a81723', // Morocco - red
+    '🇲🇽': '#017c45', // Mexico - green
+    '🇳🇱': '#055dc5', // Netherlands - blue
+    '🇳🇴': '#9f183c', // Norway - red
+    '🇵🇭': '#10296b', // Philippines - navy
+    '🇵🇱': '#b02720', // Poland - red
+    '🇵🇹': '#01591c', // Portugal - green
+    '🇷🇴': '#7a6a08', // Romania - flag yellow
+    '🇸🇪': '#004588', // Sweden - blue
+    '🇸🇮': '#006d8c', // Slovenia - blue
+    '🇸🇳': '#3d6c10', // Senegal - green
+    '🇹🇭': '#232366', // Thailand - navy
+    '🇹🇷': '#d8310c', // Turkey - red
+    '🇺🇸': '#2c1765', // United States - indigo
+    '🇻🇳': '#d8284b'  // Vietnam - red
+  };
 
-// Day names (short)
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const FAVORITES_KEY = 'calendarFavorites';
 
-// Current year
-const CURRENT_YEAR = 2026;
+  const events = window.EVENTS || [];
+  const byId = new Map();
+  let allFlags = [];
+  let activeFlags = new Set();
+  let favorites = new Set();
+  let showOnlyFavorites = false;
+  let showPastEvents = false;
+  let currentWeekendKey = null;
 
-/**
- * Filter events for a specific month (including events visible in other-month cells)
- * Events are NOT clipped - they span across month boundaries naturally
- */
-function getEventsForMonth(month) {
-  // Get the visible date range for this month's calendar view
-  // (includes days from previous/next month that appear in the grid)
-  const firstOfMonth = new Date(CURRENT_YEAR, month, 1);
-  const lastOfMonth = new Date(CURRENT_YEAR, month + 1, 0);
-  
-  // Find the first visible day (Monday of the week containing the 1st)
-  let firstDayOfWeek = firstOfMonth.getDay();
-  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Convert to Monday-based
-  const visibleStart = new Date(firstOfMonth);
-  visibleStart.setDate(visibleStart.getDate() - firstDayOfWeek);
-  
-  // Find the last visible day (Sunday of the week containing the last day)
-  let lastDayOfWeek = lastOfMonth.getDay();
-  lastDayOfWeek = lastDayOfWeek === 0 ? 6 : lastDayOfWeek - 1; // Convert to Monday-based
-  const daysToAdd = 6 - lastDayOfWeek;
-  const visibleEnd = new Date(lastOfMonth);
-  visibleEnd.setDate(visibleEnd.getDate() + daysToAdd);
-  
-  return window.EVENTS.filter(event => {
-    const startDate = new Date(event.start);
-    const endDate = new Date(event.end);
-    
-    // Check if event overlaps with the visible date range
-    return (startDate <= visibleEnd && endDate >= visibleStart);
-  });
-}
-
-/**
- * Calculate the maximum number of overlapping events on any day in the visible month grid
- */
-function getMaxEventsPerDayInMonth(month) {
-  // Get the visible date range for this month's calendar view
-  const firstOfMonth = new Date(CURRENT_YEAR, month, 1);
-  const lastOfMonth = new Date(CURRENT_YEAR, month + 1, 0);
-  
-  // Find the first visible day (Monday of the week containing the 1st)
-  let firstDayOfWeek = firstOfMonth.getDay();
-  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-  const visibleStart = new Date(firstOfMonth);
-  visibleStart.setDate(visibleStart.getDate() - firstDayOfWeek);
-  
-  // Find the last visible day (Sunday of the week containing the last day)
-  let lastDayOfWeek = lastOfMonth.getDay();
-  lastDayOfWeek = lastDayOfWeek === 0 ? 6 : lastDayOfWeek - 1;
-  const daysToAdd = 6 - lastDayOfWeek;
-  const visibleEnd = new Date(lastOfMonth);
-  visibleEnd.setDate(visibleEnd.getDate() + daysToAdd);
-  
-  // Calculate total visible days
-  const totalDays = Math.round((visibleEnd - visibleStart) / (1000 * 60 * 60 * 24)) + 1;
-  
-  // Count events for each visible day
-  const eventCounts = new Array(totalDays).fill(0);
-  
-  const monthEvents = getEventsForMonth(month);
-  
-  monthEvents.forEach(event => {
-    const startDate = new Date(event.start);
-    const endDate = new Date(event.end);
-    
-    // For each visible day the event spans, increment the count
-    for (let i = 0; i < totalDays; i++) {
-      const currentDate = new Date(visibleStart);
-      currentDate.setDate(visibleStart.getDate() + i);
-      if (currentDate >= startDate && currentDate <= endDate) {
-        eventCounts[i]++;
-      }
-    }
-  });
-  
-  return Math.max(...eventCounts, 0);
-}
-
-/**
- * Get the number of weeks in a month
- */
-function getWeeksInMonth(month) {
-  const firstDay = new Date(CURRENT_YEAR, month, 1);
-  const lastDay = new Date(CURRENT_YEAR, month + 1, 0);
-  
-  // Adjust for Monday start (0 = Sunday, 1 = Monday, etc)
-  let firstDayOfWeek = firstDay.getDay();
-  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Convert to Monday-based
-  
-  const daysInMonth = lastDay.getDate();
-  const totalCells = firstDayOfWeek + daysInMonth;
-  
-  return Math.ceil(totalCells / 7);
-}
-
-/**
- * Format date as YYYY-MM-DD
- */
-function formatDate(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-/**
- * Convert events to TUI Calendar format
- */
-function convertEventsToTUIFormat(events) {
-  return events.map(event => {
-    return {
-      id: event.id,
-      calendarId: 'main',
-      title: event.title,
-      start: event.start,
-      end: event.end,
-      isAllday: true,
-      category: 'allday',
-      backgroundColor: event.backgroundColor || '#03bd9e',
-      color: event.color || '#ffffff',
-      borderColor: event.backgroundColor || '#03bd9e',
-      // Custom properties for link and flag
-      raw: {
-        link: event.link,
-        flag: event.flag || null
-      }
-    };
-  });
-}
-
-/**
- * Get flagcdn URL for a flag emoji
- */
-function getFlagImageUrl(flagEmoji) {
-  const countryCode = emojiToCountryCode(flagEmoji);
-  if (!countryCode) return null;
-  return `https://flagcdn.com/20x15/${countryCode}.png`;
-}
-
-/**
- * Get all unique flags from events
- */
-function getAllFlags() {
-  const flags = new Set();
-  
-  window.EVENTS.forEach(event => {
-    if (event.flag) {
-      flags.add(event.flag);
-    }
-  });
-  
-  return Array.from(flags).sort();
-}
-
-/**
- * Load favorites from localStorage
- */
-function loadFavorites() {
-  try {
-    const saved = localStorage.getItem('calendarFavorites');
-    if (saved) {
-      favorites = new Set(JSON.parse(saved));
-    }
-  } catch (e) {
-    console.warn('Could not load favorites:', e);
-  }
-}
-
-/**
- * Save favorites to localStorage
- */
-function saveFavorites() {
-  try {
-    localStorage.setItem('calendarFavorites', JSON.stringify([...favorites]));
-  } catch (e) {
-    console.warn('Could not save favorites:', e);
-  }
-}
-
-
-/**
- * Toggle favorite status for an event
- */
-function toggleFavorite(eventId) {
-  if (favorites.has(eventId)) {
-    favorites.delete(eventId);
-  } else {
-    favorites.add(eventId);
-  }
-  saveFavorites();
-  
-  // Only refresh calendars if favorites filter is active, otherwise just update the heart icon
-  if (showOnlyFavorites) {
-    refreshCalendars();
-  } else {
-    // Just update the heart icon in the DOM without full refresh
-    updateHeartIcon(eventId);
-  }
-  updateFavoriteFilterUI();
-}
-
-/**
- * Update heart icon for a specific event without full calendar refresh
- */
-function updateHeartIcon(eventId) {
-  const isFavorite = favorites.has(eventId);
-  const heartIcon = isFavorite ? '❤️' : '🤍';
-  const heartClass = isFavorite ? 'favorite-heart active' : 'favorite-heart';
-  
-  // Find all heart icons for this event
-  document.querySelectorAll(`[data-favorite-id="${eventId}"]`).forEach(heart => {
-    heart.textContent = heartIcon;
-    heart.className = heartClass;
-  });
-}
-
-/**
- * Check if an event should be visible based on current filters
- */
-function isEventVisible(event) {
-  // If showing only favorites, bypass country filter for favorite events
-  if (showOnlyFavorites) {
-    return favorites.has(event.id);
-  }
-  
-  // Use event.flag field
-  const flag = event.flag;
-  
-  // If event has no flag, only show when ALL filters are active
-  if (!flag) {
-    return activeFilters.size === allFlags.length;
-  }
-  
-  // If event has a flag, check if that flag is in active filters
-  return activeFilters.has(flag);
-}
-
-/**
- * Get filtered events for a month
- */
-function getFilteredEventsForMonth(month) {
-  return getEventsForMonth(month).filter(isEventVisible);
-}
-
-/**
- * Calculate max events per day for filtered events in a month
- */
-function getMaxFilteredEventsPerDayInMonth(month) {
-  const firstOfMonth = new Date(CURRENT_YEAR, month, 1);
-  const lastOfMonth = new Date(CURRENT_YEAR, month + 1, 0);
-  
-  let firstDayOfWeek = firstOfMonth.getDay();
-  firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-  const visibleStart = new Date(firstOfMonth);
-  visibleStart.setDate(visibleStart.getDate() - firstDayOfWeek);
-  
-  let lastDayOfWeek = lastOfMonth.getDay();
-  lastDayOfWeek = lastDayOfWeek === 0 ? 6 : lastDayOfWeek - 1;
-  const daysToAdd = 6 - lastDayOfWeek;
-  const visibleEnd = new Date(lastOfMonth);
-  visibleEnd.setDate(visibleEnd.getDate() + daysToAdd);
-  
-  const totalDays = Math.round((visibleEnd - visibleStart) / (1000 * 60 * 60 * 24)) + 1;
-  const eventCounts = new Array(totalDays).fill(0);
-  
-  // Use filtered events
-  const monthEvents = getFilteredEventsForMonth(month);
-  
-  monthEvents.forEach(event => {
-    const startDate = new Date(event.start);
-    const endDate = new Date(event.end);
-    
-    for (let i = 0; i < totalDays; i++) {
-      const currentDate = new Date(visibleStart);
-      currentDate.setDate(visibleStart.getDate() + i);
-      if (currentDate >= startDate && currentDate <= endDate) {
-        eventCounts[i]++;
-      }
-    }
-  });
-  
-  return Math.max(...eventCounts, 0);
-}
-
-/**
- * Recalculate calendar height based on filtered events
- */
-function recalculateCalendarHeight(monthIndex) {
-  const container = document.getElementById(`calendar-${monthIndex}`);
-  if (!container) return;
-  
-  const maxEvents = getMaxFilteredEventsPerDayInMonth(monthIndex);
-  const weeksInMonth = getWeeksInMonth(monthIndex);
-  
-  const dayHeaderHeight = 30;
-  const eventHeight = 24;
-  const dayNumberHeight = 26;
-  const padding = 15;
-  
-  const rowHeight = dayNumberHeight + (maxEvents * eventHeight) + padding;
-  const calendarHeight = dayHeaderHeight + (weeksInMonth * rowHeight);
-  
-  container.style.height = (calendarHeight + 50) + 'px';
-}
-
-/**
- * Refresh all calendars with current filter settings
- */
-function refreshCalendars() {
-  calendars.forEach((calendar, monthIndex) => {
-    // Clear existing events
-    calendar.clear();
-    
-    // Recalculate height
-    recalculateCalendarHeight(monthIndex);
-    
-    // Add filtered events
-    const monthEvents = getFilteredEventsForMonth(monthIndex);
-    const tuiEvents = convertEventsToTUIFormat(monthEvents);
-    if (tuiEvents.length > 0) {
-      calendar.createEvents(tuiEvents);
-    }
-  });
-  
-  // Trigger window resize to force calendars to recalculate layout
-  window.dispatchEvent(new Event('resize'));
-}
-
-/**
- * Initialize the filter panel UI
- */
-function initFilterPanel() {
-  allFlags = getAllFlags();
-  
-  // Load favorites from localStorage
-  loadFavorites();
-  
-  // Initialize all filters as active
-  allFlags.forEach(flag => activeFilters.add(flag));
-  
-  const filterGrid = document.getElementById('filter-grid');
+  const root = document.getElementById('calendar-root');
+  const headerSub = document.getElementById('header-sub');
+  const emptyState = document.getElementById('empty-state');
+  const filterPanel = document.getElementById('filter-panel');
   const filterToggle = document.getElementById('filter-toggle');
   const filterDropdown = document.getElementById('filter-dropdown');
-  const filterArrow = filterToggle.querySelector('.filter-arrow');
+  const filterGrid = document.getElementById('filter-grid');
+  const filterCount = document.getElementById('filter-count');
   const selectAllBtn = document.getElementById('select-all');
   const selectNoneBtn = document.getElementById('select-none');
-  
-  // Clear existing filter items to prevent duplicates
-  filterGrid.innerHTML = '';
-  
-  // Add favorites filter as first item
-  const favItem = document.createElement('div');
-  favItem.className = 'filter-item filter-favorite';
-  favItem.id = 'filter-favorite';
-  favItem.textContent = '❤️';
-  favItem.dataset.flag = 'favorite';
-  
-  favItem.addEventListener('click', () => {
-    showOnlyFavorites = !showOnlyFavorites;
-    updateFavoriteFilterUI();
-    refreshCalendars();
-  });
-  
-  favItem.addEventListener('mouseenter', (e) => {
-    showTooltip('Favorites only', e.clientX, e.clientY);
-  });
-  
-  favItem.addEventListener('mousemove', (e) => {
-    showTooltip('Favorites only', e.clientX, e.clientY);
-  });
-  
-  favItem.addEventListener('mouseleave', () => {
-    hideTooltip();
-  });
-  
-  filterGrid.appendChild(favItem);
-  
-  // Populate flag grid
-  allFlags.forEach(flag => {
-    const item = document.createElement('div');
-    // Set initial class based on loaded state
-    const isActive = activeFilters.has(flag);
-    item.className = isActive ? 'filter-item active' : 'filter-item inactive';
-    item.dataset.flag = flag;
-    
-    // Add flag image instead of emoji text (use smaller size for filter)
-    const flagUrl = getFlagImageUrl(flag);
-    if (flagUrl) {
-      const img = document.createElement('img');
-      img.src = flagUrl;
-      img.alt = flag;
-      img.className = 'filter-flag-image';
-      item.appendChild(img);
+  const pastToggle = document.getElementById('past-toggle');
+
+  /* ---------------- date helpers (UTC for events) ---------------- */
+
+  function parseDate(str) {
+    return new Date(str + 'T00:00:00Z');
+  }
+
+  function addDays(date, n) {
+    const d = new Date(date);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d;
+  }
+
+  function iso(date) {
+    return date.toISOString().slice(0, 10);
+  }
+
+  /**
+   * Weekend (Fri–Sun) that contains the given start date.
+   * Events starting Mon–Thu land in the weekend of the same week,
+   * because festivals run into that weekend.
+   */
+  function weekendOfStart(startStr) {
+    const d = parseDate(startStr);
+    const monOffset = (d.getUTCDay() + 6) % 7; // days back to Monday
+    const sat = addDays(d, 5 - monOffset);
+    return {
+      key: iso(sat),
+      fri: addDays(sat, -1),
+      sat: sat,
+      sun: addDays(sat, 1)
+    };
+  }
+
+  function localTodayISO() {
+    const now = new Date();
+    return now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0');
+  }
+
+  /* ---------------- weekend labels ---------------- */
+
+  function rangeLabel(w) {
+    return w.fri.getUTCDate() + ' – ' + w.sun.getUTCDate();
+  }
+
+  function monthLabel(w) {
+    const fm = w.fri.getUTCMonth(), fy = w.fri.getUTCFullYear();
+    const sm = w.sun.getUTCMonth(), sy = w.sun.getUTCFullYear();
+    if (fm === sm && fy === sy) {
+      return MONTHS[fm].slice(0, 3) + ' ' + fy;
+    }
+    if (fy === sy) {
+      return MONTHS[fm].slice(0, 3) + ' / ' + MONTHS[sm].slice(0, 3) + ' ' + fy;
+    }
+    return MONTHS[fm].slice(0, 3) + ' ' + String(fy).slice(2) +
+      ' / ' + MONTHS[sm].slice(0, 3) + ' ' + String(sy).slice(2);
+  }
+
+  /* ---------------- grouping: months → weekends → events ---------------- */
+
+  /* OKLab conversion for perceptual color distance */
+  function hexToOklab(hex) {
+    const n = parseInt(String(hex).slice(1), 16);
+    if (Number.isNaN(n)) return null;
+    let r = ((n >> 16) & 255) / 255;
+    let g = ((n >> 8) & 255) / 255;
+    let b = (n & 255) / 255;
+    const lin = v => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    r = lin(r); g = lin(g); b = lin(b);
+    const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
+    const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
+    const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
+    const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+    return [
+      0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
+      1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
+      0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
+    ];
+  }
+
+  function colorDistance(hexA, hexB) {
+    const A = hexA ? hexToOklab(hexA) : null;
+    const B = hexB ? hexToOklab(hexB) : null;
+    if (!A || !B) return 0;
+    return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]);
+  }
+
+  /**
+   * Within one weekend, same-country events stay grouped together,
+   * but the GROUP ORDER is optimized so consecutive groups have
+   * maximally different bubble colors: sum of consecutive OKLab
+   * distances is maximized AND same-hue adjacency is penalized.
+   * (Exhaustive for <= 7 groups, 2-opt local search above that.)
+   */
+  function optimizeGroupOrder(groups) {
+    const n = groups.length;
+    if (n <= 1) return groups;
+
+    groups.forEach((g, i) => { g._idx = i; });
+    const cache = new Map();
+    const pair = (g1, g2) => {
+      const key = g1._idx < g2._idx ? g1._idx + '|' + g2._idx : g2._idx + '|' + g1._idx;
+      if (cache.has(key)) return cache.get(key);
+      const de = colorDistance(g1.color, g2.color);
+      let sim = 0;
+      const A = hexToOklab(g1.color);
+      const B = hexToOklab(g2.color);
+      if (A && B) {
+        const hA = Math.atan2(A[2], A[1]) * 180 / Math.PI;
+        const hB = Math.atan2(B[2], B[1]) * 180 / Math.PI;
+        let hd = Math.abs(hA - hB);
+        if (hd > 180) hd = 360 - hd;
+        sim = Math.max(0, 1 - de / 0.22) * 0.6 + Math.max(0, 1 - hd / 45) * 0.4;
+      }
+      const v = { de, sim };
+      cache.set(key, v);
+      return v;
+    };
+
+    const score = arr => {
+      let s = 0;
+      for (let i = 0; i < arr.length - 1; i++) {
+        const p = pair(arr[i], arr[i + 1]);
+        s += p.de - 1.2 * p.sim;
+      }
+      return s;
+    };
+
+    // Candidate 1: biggest group first.
+    const byCount = groups.slice()
+      .sort((a, b) => b.count - a.count || a.start.localeCompare(b.start));
+    // Candidate 2: greedy farthest-color walk.
+    const greedy = [byCount[0]];
+    const rest = byCount.slice(1);
+    while (rest.length) {
+      let bi = 0, bs = -Infinity;
+      rest.forEach((g, i) => {
+        const p = pair(greedy[greedy.length - 1], g);
+        const sc = p.de - 1.2 * p.sim + Math.min(g.count, 8) * 0.004;
+        if (sc > bs) { bs = sc; bi = i; }
+      });
+      greedy.push(rest.splice(bi, 1)[0]);
+    }
+
+    let best = score(greedy) > score(byCount) ? greedy : byCount;
+    let bestScore = score(best);
+
+    if (n <= 7) {
+      const permute = arr => {
+        if (arr.length <= 1) return [arr];
+        const out = [];
+        arr.forEach((el, i) => {
+          const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+          permute(rest).forEach(p => out.push([el].concat(p)));
+        });
+        return out;
+      };
+      permute(best).forEach(p => {
+        const sc = score(p);
+        if (sc > bestScore) { best = p; bestScore = sc; }
+      });
     } else {
-      // Fallback to emoji if no image available
-      item.textContent = flag;
-    }
-    
-    item.addEventListener('click', () => {
-      if (activeFilters.has(flag)) {
-        activeFilters.delete(flag);
-        item.classList.remove('active');
-        item.classList.add('inactive');
-      } else {
-        activeFilters.add(flag);
-        item.classList.remove('inactive');
-        item.classList.add('active');
-      }
-      refreshCalendars();
-      updateFilterCount();
-    });
-    
-    // Show country name on hover
-    item.addEventListener('mouseenter', (e) => {
-      const countryName = FLAG_NAMES[flag] || 'Unknown';
-      showTooltip(countryName, e.clientX, e.clientY);
-    });
-    
-    item.addEventListener('mousemove', (e) => {
-      const countryName = FLAG_NAMES[flag] || 'Unknown';
-      showTooltip(countryName, e.clientX, e.clientY);
-    });
-    
-    item.addEventListener('mouseleave', () => {
-      hideTooltip();
-    });
-    
-    filterGrid.appendChild(item);
-  });
-  
-  updateFavoriteFilterUI();
-  
-  // Toggle dropdown
-  filterToggle.addEventListener('click', () => {
-    filterDropdown.classList.toggle('hidden');
-    filterArrow.classList.toggle('open');
-  });
-  
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#filter-panel')) {
-      filterDropdown.classList.add('hidden');
-      filterArrow.classList.remove('open');
-    }
-  });
-  
-  // Select All button
-  selectAllBtn.addEventListener('click', () => {
-    allFlags.forEach(flag => activeFilters.add(flag));
-    document.querySelectorAll('.filter-item:not(.filter-favorite)').forEach(item => {
-      item.classList.add('active');
-      item.classList.remove('inactive');
-    });
-    refreshCalendars();
-    updateFilterCount();
-  });
-  
-  // Select None button
-  selectNoneBtn.addEventListener('click', () => {
-    activeFilters.clear();
-    document.querySelectorAll('.filter-item:not(.filter-favorite)').forEach(item => {
-      item.classList.remove('active');
-      item.classList.add('inactive');
-    });
-    refreshCalendars();
-    updateFilterCount();
-  });
-  
-  updateFilterCount();
-}
-
-/**
- * Update the filter count badge
- */
-function updateFilterCount() {
-  const filterHeader = document.getElementById('filter-toggle');
-  let countBadge = filterHeader.querySelector('.filter-count');
-  
-  const hiddenCount = allFlags.length - activeFilters.size;
-  
-  if (hiddenCount > 0) {
-    if (!countBadge) {
-      countBadge = document.createElement('span');
-      countBadge.className = 'filter-count';
-      filterHeader.appendChild(countBadge);
-    }
-    countBadge.textContent = `-${hiddenCount}`;
-  } else if (countBadge) {
-    countBadge.remove();
-  }
-}
-
-/**
- * Update the favorite filter UI
- */
-function updateFavoriteFilterUI() {
-  const favItem = document.getElementById('filter-favorite');
-  if (favItem) {
-    if (showOnlyFavorites) {
-      favItem.classList.add('active');
-      favItem.classList.remove('inactive');
-    } else {
-      favItem.classList.remove('active');
-      favItem.classList.remove('inactive');
-    }
-  }
-}
-
-/**
- * Setup click handlers for favorite hearts and event links
- */
-function setupFavoriteClickHandler() {
-  // Use capture phase to intercept before anything else
-  document.addEventListener('mousedown', (e) => {
-    // Handle heart clicks - set flag on mousedown before click event fires
-    const heart = e.target.closest('.favorite-heart');
-    if (heart) {
-      heartClickedRecently = true;
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      const eventId = heart.dataset.favoriteId;
-      if (eventId) {
-        toggleFavorite(eventId);
-      }
-      // Reset flag after a short delay
-      setTimeout(() => {
-        heartClickedRecently = false;
-      }, 100);
-      return false;
-    }
-  }, true); // Use capture phase
-  
-  // Also prevent on click
-  document.addEventListener('click', (e) => {
-    const heart = e.target.closest('.favorite-heart');
-    if (heart) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      return false;
-    }
-  }, true);
-}
-
-/**
- * Show event name tooltip bubble
- */
-function showTooltip(eventName, x, y) {
-  const tooltip = document.getElementById('event-tooltip');
-  const tooltipText = document.getElementById('tooltip-text');
-  
-  if (!eventName) {
-    hideTooltip();
-    return;
-  }
-  
-  tooltipText.textContent = eventName;
-  tooltip.classList.remove('hidden');
-  
-  // Wait for the tooltip to render to get its actual size
-  requestAnimationFrame(() => {
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
-    
-    let posX = x + 10;
-    let posY = y - tooltipRect.height - 10; // Show above the cursor
-    
-    // Check right edge overflow
-    if (posX + tooltipRect.width > windowWidth) {
-      posX = windowWidth - tooltipRect.width - 10;
-    }
-    
-    // Check left edge
-    if (posX < 10) {
-      posX = 10;
-    }
-    
-    // Check top edge overflow - if not enough space above, show below
-    if (posY < 10) {
-      posY = y + 20;
-    }
-    
-    // Check bottom edge overflow
-    if (posY + tooltipRect.height > windowHeight) {
-      posY = windowHeight - tooltipRect.height - 10;
-    }
-    
-    tooltip.style.left = posX + 'px';
-    tooltip.style.top = posY + 'px';
-  });
-}
-
-/**
- * Hide tooltip
- */
-function hideTooltip() {
-  const tooltip = document.getElementById('event-tooltip');
-  tooltip.classList.add('hidden');
-}
-
-/**
- * Initialize a single month calendar
- */
-function initCalendar(monthIndex) {
-  const container = document.getElementById(`calendar-${monthIndex}`);
-  if (!container) return null;
-  
-  // Calculate dynamic height based on max FILTERED events and weeks
-  const maxEvents = getMaxFilteredEventsPerDayInMonth(monthIndex);
-  const weeksInMonth = getWeeksInMonth(monthIndex);
-  
-  // Height calculation - generous values to ensure all events fit:
-  // - Day header height: 30px
-  // - Each event: 24px (including margin)
-  // - Day number: 26px
-  // - Extra padding per row: 15px
-  const dayHeaderHeight = 30;
-  const eventHeight = 24;
-  const dayNumberHeight = 26;
-  const padding = 15;
-  
-  const rowHeight = dayNumberHeight + (maxEvents * eventHeight) + padding;
-  const calendarHeight = dayHeaderHeight + (weeksInMonth * rowHeight);
-  
-  // Set container height with generous extra buffer
-  container.style.height = (calendarHeight + 50) + 'px';
-  
-  console.log(`Month ${monthIndex + 1}: maxEvents=${maxEvents}, weeks=${weeksInMonth}, height=${calendarHeight + 50}px`);
-  
-  // Create calendar
-  const calendar = new tui.Calendar(container, {
-    defaultView: 'month',
-    usageStatistics: false,
-    isReadOnly: true,
-    month: {
-      startDayOfWeek: 1, // Monday
-      dayNames: DAY_NAMES,
-      narrowWeekend: false,
-      visibleWeeksCount: 0, // Automatic
-      isAlways6Weeks: false, // Only show required weeks
-      visibleEventCount: 999, // Show all events - no limit
-    },
-    gridSelection: false,
-    useDetailPopup: false,
-    useFormPopup: false,
-    calendars: [
-      {
-        id: 'main',
-        name: 'Events',
-        backgroundColor: '#03bd9e',
-        borderColor: '#03bd9e'
-      }
-    ],
-    template: {
-      // Month day name header (Mon, Tue, Wed...)
-      monthDayName(model) {
-        return `<span class="day-name">${model.label}</span>`;
-      },
-      // All day events
-      allday(event) {
-        const hasLink = event.raw && event.raw.link;
-        const isFavorite = favorites.has(event.id);
-        const heartClass = isFavorite ? 'favorite-heart active' : 'favorite-heart';
-        const heartIcon = isFavorite ? '❤️' : '🤍';
-        
-        // Get flag image if flag exists
-        let flagImage = '';
-        if (event.raw && event.raw.flag) {
-          const flagUrl = getFlagImageUrl(event.raw.flag);
-          if (flagUrl) {
-            flagImage = `<img src="${flagUrl}" alt="${event.raw.flag}" class="event-flag" />`;
+      // 2-opt segment reversal search.
+      let improved = true;
+      while (improved) {
+        improved = false;
+        for (let i = 0; i < n - 1 && !improved; i++) {
+          for (let k = i + 1; k < n; k++) {
+            const cand = best.slice();
+            let a = i, b = k;
+            while (a < b) {
+              const t = cand[a]; cand[a] = cand[b]; cand[b] = t;
+              a++; b--;
+            }
+            const sc = score(cand);
+            if (sc > bestScore + 1e-9) {
+              best = cand; bestScore = sc; improved = true;
+              break;
+            }
           }
         }
-        
-        let titleContent;
-        if (hasLink) {
-          titleContent = `<span class="event-title" data-event-id="${event.id}" data-link="${event.raw.link}">${event.title}</span>`;
-        } else {
-          titleContent = `<span class="event-title" data-event-id="${event.id}">${event.title}</span>`;
-        }
-        
-        return `<div class="event-wrapper" data-event-id="${event.id}">
-          ${flagImage}
-          ${titleContent}
-          <span class="${heartClass}" data-favorite-id="${event.id}">${heartIcon}</span>
-        </div>`;
-      },
-      // Month grid header (day number)
-      monthGridHeader(model) {
-        // Hide other month's days
-        if (model.isOtherMonth) {
-          return '';
-        }
-        // model.date = "2027-01-10" format, extract the day
-        const dayNumber = parseInt(model.date.split('-')[2], 10);
-        const isToday = model.isToday ? ' today' : '';
-        return `<span class="grid-header${isToday}">${dayNumber}</span>`;
-      },
-      // Hidden events count in header
-      monthGridHeaderExceed(hiddenEvents) {
-        return `<span class="more-events">+${hiddenEvents}</span>`;
-      },
-      // "More events" popup title
-      monthMoreTitleDate(moreTitle) {
-        return `<span>${moreTitle.date}</span>`;
-      },
-      // Hidden events count in footer
-      monthGridFooterExceed(hiddenEvents) {
-        return `<span class="more-events">+${hiddenEvents}</span>`;
-      }
-    },
-    theme: {
-      common: {
-        backgroundColor: 'transparent',
-        border: 'none',
-        dayName: {
-          color: '#666'
-        },
-        holiday: {
-          color: '#ff6b6b'
-        },
-        saturday: {
-          color: '#5c7cfa'
-        }
-      },
-      month: {
-        dayName: {
-          borderLeft: 'none',
-          backgroundColor: 'inherit'
-        },
-        dayExceptThisMonth: {
-          color: '#ddd'
-        },
-        holidayExceptThisMonth: {
-          color: '#ffb8b8'
-        },
-        moreView: {
-          backgroundColor: 'white',
-          border: '1px solid #eee',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-          width: 200,
-          height: 150
-        },
-        moreViewTitle: {
-          backgroundColor: '#f5f5f5'
-        },
-        gridCell: {
-          headerHeight: 24,
-          footerHeight: 0
-        }
       }
     }
-  });
-  
-  // Set to the specific month
-  calendar.setDate(new Date(CURRENT_YEAR, monthIndex, 1));
-  
-  // Add filtered events
-  const monthEvents = getFilteredEventsForMonth(monthIndex);
-  const tuiEvents = convertEventsToTUIFormat(monthEvents);
-  if (tuiEvents.length > 0) {
-    calendar.createEvents(tuiEvents);
-  }
-  
-  // Click event - open link (but not if heart was clicked)
-  calendar.on('clickEvent', ({ event }) => {
-    // Don't open link if heart was clicked
-    if (heartClickedRecently) {
-      return;
-    }
-    if (event.raw && event.raw.link) {
-      window.open(event.raw.link, '_blank');
-    }
-  });
-  
-  return calendar;
-}
 
-/**
- * Setup hover events for event name tooltips
- */
-function setupHoverEvents() {
-  let currentEventId = null;
-  
-  // Delegated event handling on document
-  document.addEventListener('mousemove', (e) => {
-    const eventElement = e.target.closest('[data-event-id]');
-    
-    if (eventElement) {
-      const eventId = eventElement.dataset.eventId;
-      
-      // Find the event in our data
-      const eventData = window.EVENTS.find(ev => ev.id === eventId);
-      
-      if (eventData) {
-        // Show tooltip with full event name
-        showTooltip(eventData.title, e.clientX, e.clientY);
-        currentEventId = eventId;
-      } else {
-        currentEventId = null;
-        hideTooltip();
+    groups.forEach(g => { delete g._idx; });
+    return best;
+  }
+
+  function orderWeekendEvents(list) {
+    const groups = new Map();
+    list.forEach(ev => {
+      const key = ev.flag || ('__noflag__' + ev.id);
+      if (!groups.has(key)) {
+        groups.set(key, {
+          color: colorForEvent(ev),
+          count: 0,
+          start: ev.start,
+          events: []
+        });
       }
+      const g = groups.get(key);
+      g.count++;
+      if (ev.start < g.start) g.start = ev.start;
+      g.events.push(ev);
+    });
+
+    const arr = Array.from(groups.values());
+    arr.forEach(g => g.events.sort((a, b) =>
+      a.start.localeCompare(b.start) || a.title.localeCompare(b.title)));
+
+    return optimizeGroupOrder(arr).reduce((out, g) => out.concat(g.events), []);
+  }
+
+  function buildGroups() {
+    const byMonth = new Map();
+
+    events.forEach(ev => {
+      const w = weekendOfStart(ev.start);
+      const mKey = w.sat.getUTCFullYear() + '-' +
+        String(w.sat.getUTCMonth() + 1).padStart(2, '0');
+
+      if (!byMonth.has(mKey)) {
+        byMonth.set(mKey, {
+          key: mKey,
+          label: MONTHS[w.sat.getUTCMonth()] + ' ' + w.sat.getUTCFullYear(),
+          weekends: new Map()
+        });
+      }
+      const month = byMonth.get(mKey);
+      if (!month.weekends.has(w.key)) {
+        month.weekends.set(w.key, Object.assign({ events: [] }, w));
+      }
+      month.weekends.get(w.key).events.push(ev);
+    });
+
+    const months = Array.from(byMonth.values())
+      .sort((a, b) => a.key.localeCompare(b.key));
+
+    months.forEach(month => {
+      month.weekends = Array.from(month.weekends.values())
+        .sort((a, b) => a.key.localeCompare(b.key));
+      month.weekends.forEach(w => {
+        w.events = orderWeekendEvents(w.events);
+      });
+      month.count = month.weekends.reduce((n, w) => n + w.events.length, 0);
+    });
+
+    return months;
+  }
+
+  /* ---------------- rendering ---------------- */
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /**
+   * Bubble color: always derived from the event's country flag,
+   * so the same country keeps the same color everywhere.
+   * Events without a flag fall back to their stored color.
+   */
+  function colorForEvent(ev) {
+    if (ev.flag && COUNTRY_COLORS[ev.flag]) {
+      return COUNTRY_COLORS[ev.flag];
+    }
+    return ev.backgroundColor || '#5a6acf';
+  }
+
+  /* ---------------- event title cleanup ---------------- */
+  /*
+   * Source titles often contain Unicode math letters (𝗧𝗔́ 𝗕𝗢𝗠),
+   * fullwidth characters, stray asterisks, duplicated words
+   * ("Festival Festival") and exact dates ("23 au 25 Octobre"),
+   * which are all redundant in a dated calendar. This normalizes
+   * them for display only — the data in events.js stays untouched.
+   */
+  const TITLE_MONTH =
+    '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|' +
+    'Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|' +
+    'Dec(?:ember)?|Octobre|janvier|Février|février|mars|avril|mai|juin|' +
+    'juillet|août|septembre|novembre|décembre|gennaio|febbraio|marzo|' +
+    'aprile|maggio|giugno|luglio|agosto|settembre|ottobre|dicembre|' +
+    'enero|febrero|abril|mayo|junio|julio|septiembre|octubre|' +
+    'noviembre|diciembre)';
+
+  function cleanTitle(raw) {
+    let s = String(raw || '');
+    if (!s) return s;
+
+    // Invisible / zero-width chars and soft hyphens.
+    s = s.replace(/[\uFEFF\u200B-\u200D\u00AD]/g, '');
+    // Unicode math letters, fullwidth glyphs, superscripts… → plain ASCII
+    // (NFKD decomposes 𝗧𝗔́ 𝗕𝗢𝗠 → "TA ́ BOM", 𝟭𝟰 → "14", ＦＲＥＥ → "FREE").
+    s = s.normalize('NFKD');
+    s = s.replace(/\u00A0/g, ' ');
+    // Unify dash glyphs.
+    s = s.replace(/[\u2010-\u2015\u2212]/g, '-');
+    // Stray formatting asterisks ("édition 6******").
+    s = s.replace(/\*+/g, '');
+
+    // Exact date in the title → redundant, drop it:
+    // "23 au 25 Octobre", "23-25 October 2026", "22 23 24 gennaio",
+    // "22.23.24 January 2027", "14, 15 et 16Mai 2027" …
+    s = s.replace(new RegExp(
+      '\\b\\d{1,2}(?:[\\s,.\\/–-]*(?:au|to|et|and)?[\\s,.\\/–-]*\\d{1,2})+' +
+      '(?=\\s*(?:' + TITLE_MONTH + '|20\\d{2})\\b|\\s*$)', 'gi'), ' ');
+    // ISO dates "2026-10-23".
+    s = s.replace(/\b20\d{2}-\d{2}-\d{2}\b/g, ' ');
+    // Single day + month: "1 Nov 2026".
+    s = s.replace(new RegExp('\\b\\d{1,2}\\s*' + TITLE_MONTH +
+      '(?:\\s*,?\\s*20\\d{2})?\\b', 'gi'), ' ');
+    // Bare "October 2026" / "Octobre 2026" / ", October 2026".
+    s = s.replace(new RegExp('[\\s,.-]*' + TITLE_MONTH + '\\s*,?\\s*20\\d{2}\\b', 'gi'), ' ');
+    // Month word left over after the day numbers were removed ("23 au 25 Octobre" → " Octobre").
+    s = s.replace(new RegExp('\\s+' + TITLE_MONTH + '\\b(?!\\s*20\\d{2})', 'gi'), ' ');
+    // Year range "2026 - 2027".
+    s = s.replace(/\b20\d{2}\s*-\s*20\d{2}\b/g, ' ');
+    // Standalone event year at the very start or end ("2027 Alegria Festival…", "… Edition 2026").
+    s = s.replace(/^\s*20\d{2}\s+/, '');
+    s = s.replace(/\s+20\d{2}\s*$/, ' ');
+
+    // Collapse duplicated consecutive words: "Festival Festival",
+    // "Kizomba KIZOMBA", "festival festival" (case-insensitive).
+    let prev = '';
+    while (prev !== s) {
+      prev = s;
+      s = s.replace(/\b(\p{L}[\p{L}0-9'’-]*)\s+\1\b/giu, '$1');
+    }
+
+    // Normalize spacing around punctuation and separators.
+    s = s.replace(/\s+/g, ' ').trim();
+    s = s.replace(/\s*,\s*/g, ', ');
+    s = s.replace(/\s+([.;:!?])/g, '$1');
+    s = s.replace(/^\s*[-–—|,.;:#&]+\s*|\s*[-–—|,.;:#&]+\s*$/g, '');
+    s = s.replace(/\s+/g, ' ').trim();
+    // Re-compose accented letters that NFKD decomposed (é, ç, ã …).
+    s = s.normalize('NFC');
+
+    return s || String(raw || '');
+  }
+
+  function chipHtml(ev) {
+    const bg = colorForEvent(ev);
+    const fg = ev.color || '#ffffff';
+    const fav = favorites.has(ev.id);
+    const title = cleanTitle(ev.title);
+    const country = FLAG_NAMES[ev.flag] || ev.location || '';
+    const flagHtml = ev.flag
+      ? '<span class="chip-flag" role="button" tabindex="-1"' +
+        ' data-flag="' + esc(ev.flag) + '"' +
+        ' title="Show only ' + esc(country || ev.flag) + '">' +
+        esc(ev.flag) + '</span>'
+      : '';
+    const dealHtml = ev.deal
+      ? '<a class="chip-deal" href="' + esc(ev.deal) + '" target="_blank" rel="noopener" title="Get the deal">✨</a>'
+      : '';
+    const tip = (country && country !== title) ? country + ' — ' + title : title;
+    const cancelled = ev.cancelled ? ' cancelled' : '';
+    const favClass = fav ? ' favorite' : '';
+    const heartClass = fav ? 'chip-heart active' : 'chip-heart';
+    const heartIcon = fav ? '❤️' : '🤍';
+
+    return '<div class="event-chip' + cancelled + favClass + '" role="link" tabindex="0"' +
+      ' data-id="' + esc(ev.id) + '"' +
+      ' data-link="' + esc(ev.link || '') + '"' +
+      ' title="' + esc(tip) + '"' +
+      ' style="background-color:' + esc(bg) + ';color:' + esc(fg) + '">' +
+      flagHtml +
+      '<span class="chip-title">' + esc(title) + '</span>' +
+      '<span class="' + heartClass + '" data-id="' + esc(ev.id) + '"' +
+      ' role="button" aria-label="' + (fav ? 'Remove from favorites' : 'Add to favorites') + '">' +
+      heartIcon + '</span>' +
+      dealHtml +
+      '</div>';
+  }
+
+  function weekendRowHtml(w) {
+    const cls = ['weekend-row'];
+    if (w.key === currentWeekendKey) {
+      cls.push('current');
+    } else if (w.key < currentWeekendKey) {
+      cls.push('past');
+    }
+
+    const nowBadge = w.key === currentWeekendKey
+      ? '<span class="wd-now">This weekend</span>'
+      : '';
+
+    return '<div class="' + cls.join(' ') + '" data-weekend="' + w.key + '">' +
+      '<div class="weekend-date">' +
+        '<span class="wd-range">' + rangeLabel(w) + '</span>' +
+        '<span class="wd-month">' + monthLabel(w) + '</span>' +
+        '<span class="wd-days">Fri – Sun</span>' +
+        nowBadge +
+      '</div>' +
+      '<div class="weekend-chips">' +
+        w.events.map(chipHtml).join('') +
+      '</div>' +
+      '</div>';
+  }
+
+  function render() {
+    byId.clear();
+    events.forEach(ev => byId.set(ev.id, ev));
+
+    const groups = buildGroups();
+    const totalWeekends = groups.reduce((n, m) => n + m.weekends.length, 0);
+
+    root.innerHTML = groups.map(month =>
+      '<section class="month-section" data-month="' + month.key + '">' +
+        '<h2 class="month-title">' +
+          '<span>' + esc(month.label) + '</span>' +
+          '<span class="month-count">' + month.weekends.length + ' weekend' +
+            (month.weekends.length > 1 ? 's' : '') + ' · ' + month.count + ' event' +
+            (month.count > 1 ? 's' : '') + '</span>' +
+        '</h2>' +
+        month.weekends.map(weekendRowHtml).join('') +
+      '</section>'
+    ).join('');
+
+    headerSub.textContent =
+      events.length + ' events · ' + totalWeekends + ' weekends · ' +
+      allFlags.length + ' countries · 2026–2027';
+  }
+
+  /* ---------------- filtering ---------------- */
+
+  function isVisible(ev) {
+    if (showOnlyFavorites) {
+      return favorites.has(ev.id);
+    }
+    if (!ev.flag) {
+      return activeFlags.size === allFlags.length;
+    }
+    return activeFlags.has(ev.flag);
+  }
+
+  function applyFilters() {
+    let visibleTotal = 0;
+
+    root.querySelectorAll('.event-chip').forEach(chip => {
+      const ev = byId.get(chip.dataset.id);
+      const visible = ev ? isVisible(ev) : true;
+      chip.classList.toggle('hidden', !visible);
+      if (visible) visibleTotal++;
+    });
+
+    root.querySelectorAll('.weekend-row').forEach(row => {
+      const hasVisible = row.querySelector('.event-chip:not(.hidden)');
+      // Past weekends are collapsed unless "Show past" is enabled.
+      const isPast = row.classList.contains('past');
+      const hide = !hasVisible || (!showPastEvents && isPast);
+      row.classList.toggle('hidden', hide);
+    });
+
+    root.querySelectorAll('.month-section').forEach(sec => {
+      sec.classList.toggle('hidden', !sec.querySelector('.weekend-row:not(.hidden)'));
+    });
+
+    emptyState.classList.toggle('hidden', visibleTotal > 0);
+    packAllChips();
+    updateFilterCount();
+  }
+
+  /* ---------------- past events toggle ---------------- */
+
+  function updatePastToggle() {
+    if (!pastToggle) return;
+    pastToggle.setAttribute('aria-pressed', String(showPastEvents));
+    const icon = pastToggle.querySelector('.past-icon');
+    if (icon) icon.textContent = showPastEvents ? '🕑' : '⏳';
+    const label = pastToggle.querySelector('.past-label');
+    if (label) label.textContent = showPastEvents ? ' Hide past' : ' Show past';
+    pastToggle.title = showPastEvents
+      ? 'Hide events before this weekend'
+      : 'Show events before this weekend';
+  }
+
+  /* ---------------- favorites ---------------- */
+
+  function loadFavorites() {
+    try {
+      favorites = new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'));
+    } catch (err) {
+      favorites = new Set();
+    }
+  }
+
+  function saveFavorites() {
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites)));
+    } catch (err) { /* storage unavailable — favorites are session-only */ }
+  }
+
+  function toggleFavorite(id) {
+    if (favorites.has(id)) {
+      favorites.delete(id);
     } else {
-      if (currentEventId !== null) {
-        currentEventId = null;
-        hideTooltip();
-      }
+      favorites.add(id);
     }
-  });
-  
-  // Also hide on mouse leave from document
-  document.addEventListener('mouseleave', () => {
-    currentEventId = null;
-    hideTooltip();
-  });
-}
+    saveFavorites();
 
-/**
- * Initialize application
- */
-function init() {
-  console.log('Initializing yearly calendar...');
-  
-  // Initialize filter panel first (before calendars, so we know all flags)
-  initFilterPanel();
-  
-  // Create 12 calendars
-  for (let i = 0; i < 12; i++) {
-    const cal = initCalendar(i);
-    if (cal) {
-      calendars.push(cal);
+    const fav = favorites.has(id);
+    root.querySelectorAll('.chip-heart[data-id="' + id + '"]').forEach(heart => {
+      heart.classList.toggle('active', fav);
+      heart.textContent = fav ? '❤️' : '🤍';
+      heart.setAttribute('aria-label', fav ? 'Remove from favorites' : 'Add to favorites');
+      // Highlight the whole liked chip with a golden ring.
+      const chip = heart.closest('.event-chip');
+      if (chip) chip.classList.toggle('favorite', fav);
+    });
+
+    if (showOnlyFavorites) {
+      applyFilters();
     }
   }
-  
-  // Setup hover events for tooltips
-  setupHoverEvents();
-  
-  // Setup favorite heart click handler
-  setupFavoriteClickHandler();
-  
-  console.log(`${calendars.length} calendars initialized successfully.`);
-  console.log(`Found ${allFlags.length} country flags:`, allFlags.join(' '));
-  console.log(`Loaded ${favorites.size} favorites`);
-}
 
-// Start on DOM load
-document.addEventListener('DOMContentLoaded', init);
+  /**
+   * Clicking a chip's flag filters the calendar down to that
+   * country only. Clicking the same flag again restores all.
+   */
+  function filterToFlag(flag) {
+    if (!flag) return;
+    const onlyThis = activeFlags.size === 1 && activeFlags.has(flag);
+    if (onlyThis) {
+      activeFlags = new Set(allFlags);
+    } else {
+      activeFlags = new Set([flag]);
+    }
+    showOnlyFavorites = false;
+    updateFilterUI();
+    applyFilters();
+  }
+
+  /* ---------------- filter panel UI ---------------- */
+
+  function updateFilterUI() {
+    const favBtn = filterGrid.querySelector('.filter-fav');
+    if (favBtn) {
+      favBtn.classList.toggle('active', showOnlyFavorites);
+    }
+    filterGrid.querySelectorAll('.filter-item:not(.filter-fav)').forEach(btn => {
+      const active = activeFlags.has(btn.dataset.flag);
+      btn.classList.toggle('active', active);
+      btn.classList.toggle('inactive', !active);
+    });
+    updateFilterCount();
+  }
+
+  function updateFilterCount() {
+    const hiddenCount = allFlags.length - activeFlags.size;
+    if (showOnlyFavorites) {
+      filterCount.textContent = '❤️';
+      filterCount.classList.remove('hidden');
+    } else if (hiddenCount > 0) {
+      filterCount.textContent = '-' + hiddenCount;
+      filterCount.classList.remove('hidden');
+    } else {
+      filterCount.textContent = '';
+      filterCount.classList.add('hidden');
+    }
+  }
+
+  function buildFilterGrid() {
+    filterGrid.innerHTML = '';
+
+    const favBtn = document.createElement('button');
+    favBtn.type = 'button';
+    favBtn.className = 'filter-item filter-fav';
+    favBtn.title = 'Favorites only';
+    favBtn.dataset.flag = '__favorites__';
+    favBtn.textContent = '❤️';
+    favBtn.addEventListener('click', () => {
+      showOnlyFavorites = !showOnlyFavorites;
+      updateFilterUI();
+      applyFilters();
+    });
+    filterGrid.appendChild(favBtn);
+
+    allFlags.forEach(flag => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'filter-item ' + (activeFlags.has(flag) ? 'active' : 'inactive');
+      btn.dataset.flag = flag;
+      btn.title = FLAG_NAMES[flag] || flag;
+      btn.textContent = flag;
+      btn.addEventListener('click', () => {
+        if (activeFlags.has(flag)) {
+          activeFlags.delete(flag);
+        } else {
+          activeFlags.add(flag);
+        }
+        updateFilterUI();
+        applyFilters();
+      });
+      filterGrid.appendChild(btn);
+    });
+
+    updateFilterUI();
+  }
+
+  function initFilterPanel() {
+    allFlags = Array.from(new Set(events.map(e => e.flag).filter(Boolean))).sort();
+    activeFlags = new Set(allFlags);
+    buildFilterGrid();
+
+    filterToggle.addEventListener('click', () => {
+      const open = filterDropdown.classList.toggle('hidden') === false;
+      filterToggle.classList.toggle('open', open);
+      filterToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    selectAllBtn.addEventListener('click', () => {
+      activeFlags = new Set(allFlags);
+      showOnlyFavorites = false;
+      updateFilterUI();
+      applyFilters();
+    });
+
+    selectNoneBtn.addEventListener('click', () => {
+      activeFlags.clear();
+      showOnlyFavorites = false;
+      updateFilterUI();
+      applyFilters();
+    });
+
+    document.addEventListener('click', e => {
+      if (!filterPanel.contains(e.target)) {
+        filterDropdown.classList.add('hidden');
+        filterToggle.classList.remove('open');
+        filterToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* ---------------- event interaction ---------------- */
+
+  function bindCalendarEvents() {
+    root.addEventListener('click', e => {
+      const chip = e.target.closest('.event-chip');
+      if (!chip) return;
+
+      if (e.target.closest('.chip-heart')) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFavorite(chip.dataset.id);
+        return;
+      }
+
+      const flagEl = e.target.closest('.chip-flag');
+      if (flagEl) {
+        e.preventDefault();
+        e.stopPropagation();
+        filterToFlag(flagEl.dataset.flag);
+        return;
+      }
+
+      if (e.target.closest('.chip-deal')) {
+        // Let the small deal anchor open normally.
+        return;
+      }
+
+      const ev = byId.get(chip.dataset.id);
+      if (ev && ev.link) {
+        window.open(ev.link, '_blank', 'noopener');
+      }
+    });
+
+    root.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const chip = e.target.closest('.event-chip');
+      if (!chip) return;
+      e.preventDefault();
+      const ev = byId.get(chip.dataset.id);
+      if (ev && ev.link) {
+        window.open(ev.link, '_blank', 'noopener');
+      }
+    });
+  }
+
+  /* ---------------- chip packing ---------------- */
+  /*
+   * Every chip starts with its full name (natural width).
+   * Chips are then packed into lines:
+   *   - short chips share a line with whatever fits,
+   *   - a long chip is shortened ONLY when that lets a
+   *     short chip join the same line,
+   *   - otherwise names stay as long as possible,
+   *   - a long chip is shortened ONLY for a genuinely SHORT
+   *     neighbour, never to squeeze in another long one,
+   *   - no chip is ever shrunk below MIN_CHIP_WIDTH,
+   *     so every bubble stays readable.
+   */
+
+  const CHIP_GAP = 5;
+  const MIN_CHIP_WIDTH = 160;
+  const LINE_SLACK = 4;
+
+  function packAllChips() {
+    root.querySelectorAll('.weekend-chips').forEach(packContainer);
+  }
+
+  function lineNaturalTotal(lineIdxs, naturals) {
+    return lineIdxs.reduce((sum, j) => sum + naturals[j], 0);
+  }
+
+  function packContainer(container) {
+    const chips = Array.from(container.querySelectorAll('.event-chip'))
+      .filter(chip => !chip.classList.contains('hidden'));
+    if (chips.length === 0) return;
+
+    const W = container.clientWidth;
+    if (W <= 0) return;
+
+    // 1. Measure natural (full-name) widths.
+    chips.forEach(chip => { chip.style.maxWidth = 'none'; });
+    const naturals = chips.map(chip =>
+      Math.min(chip.getBoundingClientRect().width, W));
+    const shortMax = Math.max(MIN_CHIP_WIDTH, W * 0.5);
+
+    // 2. Greedy line packing. A chip joins the current line when it fits,
+    //    or when the widest chip of the line can be shrunk enough
+    //    (never below MIN_CHIP_WIDTH) to make room.
+    const lines = [];
+    let line = [];
+
+    chips.forEach((chip, i) => {
+      if (!line.length) {
+        line = [i];
+        return;
+      }
+      const gaps = line.length * CHIP_GAP;
+      if (lineNaturalTotal(line, naturals) + gaps + naturals[i] <= W - LINE_SLACK) {
+        line.push(i);
+        return;
+      }
+      // A chip only pushes onto a full line when it is genuinely short;
+      // then the widest chip is shortened so the short one can share the row.
+      if (naturals[i] > shortMax) {
+        lines.push(line);
+        line = [i];
+        return;
+      }
+      const widest = line.reduce(
+        (best, j) => (naturals[j] > naturals[best] ? j : best), line[0]);
+      const others = lineNaturalTotal(line, naturals) - naturals[widest];
+      const widestSpace = (W - LINE_SLACK) - others - gaps - naturals[i];
+      if (widestSpace >= MIN_CHIP_WIDTH) {
+        line.push(i);
+      } else {
+        lines.push(line);
+        line = [i];
+      }
+    });
+    lines.push(line);
+
+    // 3. Assign widths per line: short chips keep their natural width,
+    //    the widest chip is shortened first when a line is too full.
+    lines.forEach(lineIdxs => {
+      if (!lineIdxs.length) return;
+      const gaps = (lineIdxs.length - 1) * CHIP_GAP;
+      const totalNatural = lineNaturalTotal(lineIdxs, naturals);
+
+      const alloc = {};
+      lineIdxs.forEach(j => { alloc[j] = naturals[j]; });
+
+      if (totalNatural + gaps > W - LINE_SLACK) {
+        let deficit = totalNatural + gaps - (W - LINE_SLACK);
+        const order = lineIdxs.slice().sort((a, b) => naturals[b] - naturals[a]);
+        for (const j of order) {
+          if (deficit <= 0) break;
+          const shrink = Math.min(Math.max(alloc[j] - MIN_CHIP_WIDTH, 0), deficit);
+          alloc[j] -= shrink;
+          deficit -= shrink;
+        }
+        // Safety net: if shrinking one chip was not enough, scale the line.
+        if (deficit > 0) {
+          const available = (W - LINE_SLACK) - gaps;
+          lineIdxs.forEach(j => {
+            alloc[j] = Math.max(
+              MIN_CHIP_WIDTH,
+              Math.round(naturals[j] * available / totalNatural));
+          });
+        }
+      }
+
+      lineIdxs.forEach(j => {
+        chips[j].style.maxWidth = alloc[j] + 'px';
+      });
+    });
+  }
+
+  /* ---------------- init ---------------- */
+
+  function init() {
+    currentWeekendKey = weekendOfStart(localTodayISO()).key;
+    loadFavorites();
+    initFilterPanel();
+
+    if (pastToggle) {
+      pastToggle.addEventListener('click', () => {
+        showPastEvents = !showPastEvents;
+        updatePastToggle();
+        applyFilters();
+      });
+    }
+
+    render();
+    bindCalendarEvents();
+    applyFilters();
+    updatePastToggle();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(packAllChips, 120);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();

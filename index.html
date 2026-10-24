@@ -1,126 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@twemoji/twemoji@14.0.2/dist/twemoji.min.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2026 Kizomba Festivals</title>
-  
-  <!-- TOAST UI Calendar CSS -->
-  <link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css" />
+  <title>Kizomba Festivals — Weekend Calendar</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="header">
-    <h1>2026 Kizomba Festivals</h1>
+    <div class="header-inner">
+      <h1>Kizomba Festivals</h1>
+      <p id="header-sub">Weekend calendar · 2026 – 2027</p>
+      <button id="past-toggle" class="past-toggle" type="button" aria-pressed="false"
+              title="Show events before this weekend">
+        <span class="past-icon" aria-hidden="true">⏳</span><span class="past-label"> Show past</span>
+      </button>
+    </div>
   </header>
-  
-  <main class="calendar-grid">
-    <!-- January -->
-    <div class="month-container">
-      <h2 class="month-title">January</h2>
-      <div id="calendar-0" class="calendar-instance"></div>
-    </div>
-    
-    <!-- February -->
-    <div class="month-container">
-      <h2 class="month-title">February</h2>
-      <div id="calendar-1" class="calendar-instance"></div>
-    </div>
-    
-    <!-- March -->
-    <div class="month-container">
-      <h2 class="month-title">March</h2>
-      <div id="calendar-2" class="calendar-instance"></div>
-    </div>
-    
-    <!-- April -->
-    <div class="month-container">
-      <h2 class="month-title">April</h2>
-      <div id="calendar-3" class="calendar-instance"></div>
-    </div>
-    
-    <!-- May -->
-    <div class="month-container">
-      <h2 class="month-title">May</h2>
-      <div id="calendar-4" class="calendar-instance"></div>
-    </div>
-    
-    <!-- June -->
-    <div class="month-container">
-      <h2 class="month-title">June</h2>
-      <div id="calendar-5" class="calendar-instance"></div>
-    </div>
-    
-    <!-- July -->
-    <div class="month-container">
-      <h2 class="month-title">July</h2>
-      <div id="calendar-6" class="calendar-instance"></div>
-    </div>
-    
-    <!-- August -->
-    <div class="month-container">
-      <h2 class="month-title">August</h2>
-      <div id="calendar-7" class="calendar-instance"></div>
-    </div>
-    
-    <!-- September -->
-    <div class="month-container">
-      <h2 class="month-title">September</h2>
-      <div id="calendar-8" class="calendar-instance"></div>
-    </div>
-    
-    <!-- October -->
-    <div class="month-container">
-      <h2 class="month-title">October</h2>
-      <div id="calendar-9" class="calendar-instance"></div>
-    </div>
-    
-    <!-- November -->
-    <div class="month-container">
-      <h2 class="month-title">November</h2>
-      <div id="calendar-10" class="calendar-instance"></div>
-    </div>
-    
-    <!-- December -->
-    <div class="month-container">
-      <h2 class="month-title">December</h2>
-      <div id="calendar-11" class="calendar-instance"></div>
-    </div>
-  </main>
-  
-  <!-- Event name tooltip on hover -->
-  <div id="event-tooltip" class="event-tooltip hidden">
-    <span id="tooltip-text"></span>
-  </div>
 
-  <!-- Country filter panel -->
+  <!-- Hand-built weekend calendar: months → weekends → event chips -->
+  <main id="calendar-root" class="calendar-root"></main>
+
+  <div id="empty-state" class="empty-state hidden">No events match the selected filters.</div>
+
+  <!-- Country flag filter panel -->
   <div id="filter-panel" class="filter-panel">
-    <div class="filter-header" id="filter-toggle">
+    <button id="filter-toggle" class="filter-header" type="button" aria-expanded="false">
       <span class="filter-icon">🏳️</span>
       <span class="filter-title">Filter</span>
-      <span class="filter-arrow">▼</span>
-    </div>
-    <div class="filter-dropdown hidden" id="filter-dropdown">
+      <span id="filter-count" class="filter-count hidden"></span>
+      <span class="filter-arrow" aria-hidden="true">▾</span>
+    </button>
+    <div id="filter-dropdown" class="filter-dropdown hidden">
       <div class="filter-actions">
-        <button id="select-all" class="filter-btn">All</button>
-        <button id="select-none" class="filter-btn">None</button>
+        <button id="select-all" type="button" class="filter-btn filter-btn-all">All</button>
+        <button id="select-none" type="button" class="filter-btn filter-btn-none">None</button>
       </div>
-      <div class="filter-grid" id="filter-grid">
-        <!-- Flags will be inserted here by JS -->
-      </div>
+      <div id="filter-grid" class="filter-grid"></div>
     </div>
   </div>
 
-  <!-- TOAST UI Calendar JS -->
-  <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
-  
-  <!-- Events data -->
   <script src="events.js"></script>
-  
-  <!-- Main app -->
   <script src="app.js"></script>
 </body>
 </html>
