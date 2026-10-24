@@ -771,9 +771,9 @@ a.chip-title:focus-visible {
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 6px;
-  padding: 10px;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  padding: 8px;
   /* Everything visible in one dialog — no inner scrollbar. */
   max-height: none;
   overflow: visible;
@@ -787,7 +787,7 @@ a.chip-title:focus-visible {
   font-size: 1.45rem;
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
 }
@@ -872,6 +872,10 @@ a.chip-title:focus-visible {
   .event-search {
     flex-basis: 110px;
     width: 110px;
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(9, 1fr);
   }
 
   .calendar-root {
