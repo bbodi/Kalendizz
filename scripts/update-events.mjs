@@ -78,7 +78,11 @@ const MANUAL_COUNTRY = [
   ['rotterdam', 'Netherlands'],
   ['tarraxo spring lyon', 'France'],
   ['ktk bali', 'Indonesia'],
-  ['wanted festival', 'France']
+  ['wanted festival', 'France'],
+  ['ta bom african rhythms', 'Spain'],
+  ['urban kiz temptation bodensee', 'Germany'],
+  ["l'immersion caribbean dream", 'France'],
+  ['kyiv dance festival', 'Ukraine']
 ];
 
 const FALLBACK_COLORS = [
@@ -215,7 +219,6 @@ for (const ev of apiEvents) {
     start: start,
     end: (ev.end_date || '').slice(0, 10) || start,
     link: link,
-    image: (ev.image && typeof ev.image === 'object' && ev.image.url) ? ev.image.url : '',
     backgroundColor: FALLBACK_COLORS[colorIdx++ % FALLBACK_COLORS.length],
     color: '#ffffff'
   };
@@ -260,7 +263,6 @@ lines.push(" *   title: 'Event name',        // Display name");
 lines.push(" *   start: '2026-10-23',        // Start date (YYYY-MM-DD)");
 lines.push(" *   end: '2026-10-25',          // End date (YYYY-MM-DD)");
 lines.push(" *   link: 'https://...',        // Link URL (opens on click)");
-lines.push(" *   image: '',                  // Cover image URL (optional)");
 lines.push(" *   backgroundColor: '#e74c3c', // Fallback chip color");
 lines.push(" *   color: '#ffffff',           // Chip text color (optional)");
 lines.push(" *   location: 'France',         // Country (optional)");
@@ -273,7 +275,7 @@ lines.push(' */');
 lines.push('');
 lines.push('const EVENTS = [');
 merged.forEach((e, i) => {
-  const keys = ['id', 'flag', 'title', 'start', 'end', 'link', 'image', 'backgroundColor', 'color'];
+  const keys = ['id', 'flag', 'title', 'start', 'end', 'link', 'backgroundColor', 'color'];
   if (e.location) keys.push('location');
   if (e.tags) keys.push('tags');
   if (e.deal) keys.push('deal');

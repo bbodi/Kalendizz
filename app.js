@@ -28,6 +28,8 @@
 
   const FAVORITES_KEY = 'calendarFavorites';
   const SHOW_PAST_KEY = 'calendarShowPast';
+  const FILTERS_KEY = 'calendarFilters';
+  const DENSITY_KEY = 'calendarDensity';
   const NO_FLAG_KEY = '__noflag__';
   const NO_FLAG_LABEL = 'Other / no country';
 
@@ -38,6 +40,9 @@
   let favorites = new Set();
   let showOnlyFavorites = false;
   let showPastEvents = false;
+  let density = 'compact';
+  let searchQuery = '';
+  let searchTimer = null;
   let currentWeekendKey = null;
   let prevActiveFlags = null;
 
@@ -53,7 +58,10 @@
   const selectAllBtn = document.getElementById('select-all');
   const selectNoneBtn = document.getElementById('select-none');
   const pastToggle = document.getElementById('past-toggle');
+  const densityToggle = document.getElementById('density-toggle');
   const monthNav = document.getElementById('month-nav');
+  const navPills = document.getElementById('nav-pills');
+  const eventSearch = document.getElementById('event-search');
 
   /* ---------------- localized labels ---------------- */
 
@@ -172,6 +180,22 @@
     return tip + ' · ' + extra.join(' · ');
   }
 
+  function googleCalUrl(ev, title, country) {
+    const start = ev.start.replace(/-/g, '');
+    const endStr = ev.end && ev.end > ev.start ? ev.end : ev.start;
+    // Google Calendar all-day events use an exclusive end date.
+    const end = parseDate(endStr);
+    end.setUTCDate(end.getUTCDate() + 1);
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: title,
+      dates: start + '/' + end.toISOString().slice(0, 10).replace(/-/g, ''),
+      location: country || ev.location || '',
+      details: ev.link || ''
+    });
+    return 'https://calendar.google.com/calendar/render?' + params.toString();
+  }
+
   function chipHtml(ev) {
     const bg = colorForEvent(ev);
     const fg = ev.color || '#ffffff';
@@ -186,6 +210,11 @@
       : '';
     const dealHtml = ev.deal
       ? '<a class="chip-deal" href="' + esc(ev.deal) + '" target="_blank" rel="noopener" title="Get the deal">✨</a>'
+      : '';
+    const calHtml = ev.link
+      ? '<a class="chip-cal" href="' + esc(googleCalUrl(ev, title, country)) + '"' +
+        ' target="_blank" rel="noopener" title="Add to Google Calendar"' +
+        ' aria-label="Add to Google Calendar">📅</a>'
       : '';
     const tip = buildTip(ev, title, country);
     const cancelled = ev.cancelled ? ' cancelled' : '';
@@ -210,6 +239,7 @@
       ' aria-label="' + (fav ? 'Remove from favorites' : 'Add to favorites') + '"' +
       ' title="' + (fav ? 'Remove from favorites' : 'Add to favorites') + '">' +
       heartIcon + '</button>' +
+      calHtml +
       dealHtml +
       '</div>';
   }
@@ -284,7 +314,7 @@
   /* ---------------- month navigation ---------------- */
 
   function buildMonthNav(months) {
-    if (!monthNav) return;
+    if (!monthNav || !navPills) return;
     let html = '<button type="button" class="nav-now" data-now="1"' +
       ' title="Jump to this weekend">● ' + esc('Now') + '</button>';
     months.forEach(m => {
@@ -293,9 +323,9 @@
         ' title="Jump to ' + esc(m.label) + '">' +
         esc(fmtMonthShort.format(sat) + ' ' + m.key.slice(0, 4)) + '</button>';
     });
-    monthNav.innerHTML = html;
+    navPills.innerHTML = html;
 
-    monthNav.addEventListener('click', e => {
+    navPills.addEventListener('click', e => {
       const nowBtn = e.target.closest('.nav-now');
       if (nowBtn) {
         const cur = root.querySelector('.weekend-row.current');
@@ -355,22 +385,35 @@
       if (on) {
         // Keep the highlighted pill visible in the horizontal strip.
         const target = btn.offsetLeft -
-          (monthNav.clientWidth - btn.clientWidth) / 2;
-        monthNav.scrollTo({ left: target, behavior: 'smooth' });
+          (navPills.clientWidth - btn.clientWidth) / 2;
+        navPills.scrollTo({ left: target, behavior: 'smooth' });
       }
     });
   }
 
   /* ---------------- filtering ---------------- */
 
+  function matchesSearch(ev) {
+    if (!searchQuery) return true;
+    const hay = [
+      cleanTitle(ev.title),
+      FLAG_NAMES[ev.flag] || '',
+      ev.location || '',
+      (ev.tags || []).join(' ')
+    ].join(' ')
+      .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    return searchQuery.split(/\s+/).every(w => hay.includes(w));
+  }
+
   function isVisible(ev) {
     if (showOnlyFavorites) {
-      return favorites.has(ev.id);
+      return favorites.has(ev.id) && matchesSearch(ev);
     }
     if (!ev.flag) {
-      return activeFlags.has(NO_FLAG_KEY);
+      return activeFlags.has(NO_FLAG_KEY) && matchesSearch(ev);
     }
-    return activeFlags.has(ev.flag);
+    return activeFlags.has(ev.flag) && matchesSearch(ev);
   }
 
   function applyFilters() {
@@ -399,6 +442,34 @@
     updateMonthNav();
     packAllChips();
     updateFilterCount();
+    saveFilters();
+  }
+
+  /* ---------------- event search ---------------- */
+
+  function runEventSearch(value) {
+    searchQuery = normalizeForSearch(value);
+    applyFilters();
+    if (searchQuery) {
+      const first = root.querySelector('.event-chip:not(.hidden)');
+      const row = first && first.closest('.weekend-row');
+      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function initEventSearch() {
+    if (!eventSearch) return;
+    eventSearch.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => runEventSearch(eventSearch.value), 120);
+    });
+    eventSearch.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && eventSearch.value) {
+        e.stopPropagation();
+        eventSearch.value = '';
+        runEventSearch('');
+      }
+    });
   }
 
   /* ---------------- past events toggle ---------------- */
@@ -429,6 +500,29 @@
     try {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites)));
     } catch (err) { /* storage unavailable — favorites are session-only */ }
+  }
+
+  /* ---------------- filter persistence ---------------- */
+
+  function saveFilters() {
+    try {
+      localStorage.setItem(FILTERS_KEY, JSON.stringify({
+        flags: Array.from(activeFlags),
+        favorites: showOnlyFavorites
+      }));
+    } catch (err) { /* session-only */ }
+  }
+
+  function loadFilters() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(FILTERS_KEY) || 'null');
+      if (saved && Array.isArray(saved.flags)) {
+        const known = new Set(allFlags);
+        activeFlags = new Set(saved.flags.filter(f => known.has(f)));
+        if (!activeFlags.size) activeFlags = new Set(allFlags);
+        showOnlyFavorites = !!saved.favorites;
+      }
+    } catch (err) { /* keep defaults */ }
   }
 
   function toggleFavorite(id) {
@@ -606,6 +700,16 @@
         filterToggle.setAttribute('aria-expanded', 'false');
       }
     });
+
+    // Esc closes the dropdown and returns focus to the toggle button.
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !filterDropdown.classList.contains('hidden')) {
+        filterDropdown.classList.add('hidden');
+        filterToggle.classList.remove('open');
+        filterToggle.setAttribute('aria-expanded', 'false');
+        filterToggle.focus();
+      }
+    });
   }
 
   /* ---------------- event interaction ---------------- */
@@ -630,8 +734,9 @@
         return;
       }
 
-      // Native anchors handle themselves (deal + event title).
-      if (e.target.closest('.chip-deal') || e.target.closest('.chip-title')) {
+      // Native anchors handle themselves (calendar, deal + event title).
+      if (e.target.closest('.chip-deal') || e.target.closest('.chip-cal') ||
+          e.target.closest('.chip-title')) {
         return;
       }
 
@@ -646,7 +751,8 @@
       const chip = e.target.closest('.event-chip');
       if (!chip) return;
       if (e.target.closest('.chip-heart') || e.target.closest('.chip-flag') ||
-          e.target.closest('.chip-deal') || e.target.closest('.chip-title')) {
+          e.target.closest('.chip-deal') || e.target.closest('.chip-cal') ||
+          e.target.closest('.chip-title')) {
         return;
       }
       if (e.button === 1) {
@@ -670,11 +776,15 @@
    */
 
   const CHIP_GAP = 5;
-  const MIN_CHIP_WIDTH = 160;
   const LINE_SLACK = 4;
 
-  // Natural (full-name) widths only depend on title + deal icon;
-  // measure once per unique title, re-measure on resize/zoom.
+  // Minimum readable chip width depends on the density setting.
+  function minChipWidth() {
+    return density === 'comfortable' ? 200 : 160;
+  }
+
+  // Natural (full-name) widths only depend on title + icons;
+  // measure once per unique combination, re-measure on resize/zoom.
   const naturalWidthCache = new Map();
 
   function packAllChips() {
@@ -693,12 +803,16 @@
     const W = container.clientWidth;
     if (W <= 0) return;
 
-    // 1. Measure natural (full-name) widths — cached per title.
+    const MIN_W = minChipWidth();
+
+    // 1. Measure natural (full-name) widths — cached per title + icons.
     chips.forEach(chip => { chip.style.maxWidth = 'none'; });
     const naturals = chips.map(chip => {
       const titleEl = chip.querySelector('.chip-title');
       const key = (titleEl ? titleEl.textContent : '') +
-        '|' + (chip.querySelector('.chip-deal') ? 'd' : '');
+        '|' + (chip.querySelector('.chip-deal') ? 'd' : '') +
+        '|' + (chip.querySelector('.chip-cal') ? 'c' : '') +
+        '|' + density;
       if (naturalWidthCache.has(key)) {
         return naturalWidthCache.get(key);
       }
@@ -706,11 +820,11 @@
       naturalWidthCache.set(key, w);
       return w;
     });
-    const shortMax = Math.max(MIN_CHIP_WIDTH, W * 0.5);
+    const shortMax = Math.max(MIN_W, W * 0.5);
 
     // 2. Greedy line packing. A chip joins the current line when it fits,
     //    or when the widest chip of the line can be shrunk enough
-    //    (never below MIN_CHIP_WIDTH) to make room.
+    //    (never below the minimum readable width) to make room.
     const lines = [];
     let line = [];
 
@@ -735,7 +849,7 @@
         (best, j) => (naturals[j] > naturals[best] ? j : best), line[0]);
       const others = lineNaturalTotal(line, naturals) - naturals[widest];
       const widestSpace = (W - LINE_SLACK) - others - gaps - naturals[i];
-      if (widestSpace >= MIN_CHIP_WIDTH) {
+      if (widestSpace >= MIN_W) {
         line.push(i);
       } else {
         lines.push(line);
@@ -759,7 +873,7 @@
         const order = lineIdxs.slice().sort((a, b) => naturals[b] - naturals[a]);
         for (const j of order) {
           if (deficit <= 0) break;
-          const shrink = Math.min(Math.max(alloc[j] - MIN_CHIP_WIDTH, 0), deficit);
+          const shrink = Math.min(Math.max(alloc[j] - MIN_W, 0), deficit);
           alloc[j] -= shrink;
           deficit -= shrink;
         }
@@ -768,7 +882,7 @@
           const available = (W - LINE_SLACK) - gaps;
           lineIdxs.forEach(j => {
             alloc[j] = Math.max(
-              MIN_CHIP_WIDTH,
+              MIN_W,
               Math.round(naturals[j] * available / totalNatural));
           });
         }
@@ -789,6 +903,11 @@
     } catch (err) {
       showPastEvents = false;
     }
+    try {
+      density = localStorage.getItem(DENSITY_KEY) === 'comfortable' ? 'comfortable' : 'compact';
+    } catch (err) {
+      density = 'compact';
+    }
   }
 
   function saveShowPast() {
@@ -797,12 +916,31 @@
     } catch (err) { /* session-only */ }
   }
 
+  /* ---------------- density toggle ---------------- */
+
+  function applyDensity() {
+    document.body.classList.toggle('density-comfortable', density === 'comfortable');
+    if (densityToggle) {
+      const comfortable = density === 'comfortable';
+      densityToggle.setAttribute('aria-pressed', String(comfortable));
+      const label = densityToggle.querySelector('.density-label');
+      if (label) label.textContent = comfortable ? ' Compact' : ' Roomier';
+      densityToggle.title = comfortable
+        ? 'Switch to compact density'
+        : 'Switch to comfortable density';
+    }
+    naturalWidthCache.clear();
+    packAllChips();
+  }
+
   function init() {
     // UTC keeps the "current weekend" consistent with event dates,
     // independent of the viewer's timezone.
     currentWeekendKey = weekendOfStart(utcTodayISO()).key;
     loadPrefs();
     initFilterPanel();
+    loadFilters(); // needs allFlags from initFilterPanel
+    initEventSearch();
 
     if (pastToggle) {
       pastToggle.addEventListener('click', () => {
@@ -813,10 +951,39 @@
       });
     }
 
+    if (densityToggle) {
+      densityToggle.addEventListener('click', () => {
+        density = density === 'comfortable' ? 'compact' : 'comfortable';
+        try {
+          localStorage.setItem(DENSITY_KEY, density);
+        } catch (err) { /* session-only */ }
+        applyDensity();
+      });
+    }
+
     render();
     bindCalendarEvents();
     applyFilters();
     updatePastToggle();
+    applyDensity();
+
+    // Printing always includes past events (hiding them is a screen
+    // convenience, not a data preference).
+    let printShowedPast = false;
+    window.addEventListener('beforeprint', () => {
+      if (!showPastEvents) {
+        printShowedPast = true;
+        showPastEvents = true;
+        applyFilters();
+      }
+    });
+    window.addEventListener('afterprint', () => {
+      if (printShowedPast) {
+        printShowedPast = false;
+        showPastEvents = false;
+        applyFilters();
+      }
+    });
 
     // Scrollspy: highlight the month currently under the sticky nav.
     let navScrollRaf = null;

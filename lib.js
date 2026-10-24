@@ -32,7 +32,8 @@
     '🇱🇺': 'Luxembourg', '🇱🇻': 'Latvia', '🇲🇦': 'Morocco', '🇲🇽': 'Mexico',
     '🇳🇱': 'Netherlands', '🇳🇴': 'Norway', '🇵🇭': 'Philippines', '🇵🇱': 'Poland',
     '🇵🇹': 'Portugal', '🇷🇴': 'Romania', '🇸🇪': 'Sweden', '🇸🇮': 'Slovenia',
-    '🇸🇳': 'Senegal', '🇹🇭': 'Thailand', '🇹🇷': 'Turkey', '🇺🇸': 'United States',
+    '🇸🇳': 'Senegal', '🇹🇭': 'Thailand', '🇹🇷': 'Turkey', '🇺🇦': 'Ukraine',
+    '🇺🇸': 'United States',
     '🇻🇳': 'Vietnam'
   };
 
@@ -87,6 +88,7 @@
     '🇸🇳': '#3d6c10', // Senegal - green
     '🇹🇭': '#232366', // Thailand - navy
     '🇹🇷': '#d8310c', // Turkey - red
+    '🇺🇦': '#1e5fae', // Ukraine - flag blue
     '🇺🇸': '#3a1f8f', // United States - indigo
     '🇻🇳': '#d8284b'  // Vietnam - red
   };

@@ -13,15 +13,25 @@
     <div class="header-inner">
       <h1>Kizomba Festivals</h1>
       <p id="header-sub">Weekend calendar</p>
-      <button id="past-toggle" class="past-toggle" type="button" aria-pressed="false"
-              title="Show events before this weekend">
-        <span class="past-icon" aria-hidden="true">⏳</span><span class="past-label"> Show past</span>
-      </button>
+      <div class="header-tools">
+        <button id="past-toggle" class="past-toggle" type="button" aria-pressed="false"
+                title="Show events before this weekend">
+          <span class="past-icon" aria-hidden="true">⏳</span><span class="past-label"> Show past</span>
+        </button>
+        <button id="density-toggle" class="density-toggle" type="button" aria-pressed="false"
+                title="Switch to comfortable density">
+          <span class="density-icon" aria-hidden="true">▦</span><span class="density-label"> Roomier</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Sticky month navigation, filled by app.js -->
-  <nav id="month-nav" class="month-nav" aria-label="Jump to month"></nav>
+  <!-- Sticky month navigation + event search, filled by app.js -->
+  <nav id="month-nav" class="month-nav" aria-label="Jump to month">
+    <div id="nav-pills" class="nav-pills"></div>
+    <input id="event-search" class="event-search" type="search"
+           placeholder="Search events…" aria-label="Search events">
+  </nav>
 
   <!-- Hand-built weekend calendar: months → weekends → event chips -->
   <main id="calendar-root" class="calendar-root"></main>

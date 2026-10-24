@@ -92,13 +92,20 @@ body {
   color: #9aa3c9;
 }
 
-/* Subtle "Show past" toggle — ghost button, pinned to the top-left
-   corner of the header so the header keeps its compact height */
-.past-toggle {
+/* Header tools: "Show past" + density, pinned top-left so the
+   header keeps its compact height */
+.header-tools {
   position: absolute;
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.past-toggle,
+.density-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -114,7 +121,8 @@ body {
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.past-toggle:hover {
+.past-toggle:hover,
+.density-toggle:hover {
   color: #c9d2f2;
   border-color: rgba(157, 170, 216, 0.45);
   background: rgba(255, 255, 255, 0.08);
@@ -126,34 +134,49 @@ body {
   background: rgba(124, 92, 255, 0.14);
 }
 
+.density-toggle[aria-pressed="true"] {
+  color: #e8ecff;
+  border-color: rgba(52, 211, 153, 0.55);
+  background: rgba(52, 211, 153, 0.12);
+}
+
 @media (max-width: 720px) {
-  .past-toggle .past-label {
+  .past-toggle .past-label,
+  .density-toggle .density-label {
     display: none;
   }
 }
 
-/* ---------- Sticky month navigation ---------- */
+/* ---------- Sticky month navigation + event search ---------- */
 .month-nav {
   position: sticky;
   top: 0;
   z-index: 45;
   display: flex;
   align-items: center;
-  gap: 6px;
-  overflow-x: auto;
+  gap: 10px;
   padding: 8px 16px;
   background: rgba(11, 13, 22, 0.78);
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-bottom: 1px solid var(--line);
+}
+
+.nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
   scrollbar-width: none;
 }
 
-.month-nav::-webkit-scrollbar {
+.nav-pills::-webkit-scrollbar {
   display: none;
 }
 
-.month-nav button {
+.nav-pills button {
   flex-shrink: 0;
   font-size: 0.72rem;
   font-weight: 700;
@@ -167,13 +190,13 @@ body {
   transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
 }
 
-.month-nav button:hover {
+.nav-pills button:hover {
   color: #fff;
   border-color: rgba(167, 139, 250, 0.7);
   background: rgba(124, 92, 255, 0.16);
 }
 
-.month-nav .nav-now {
+.nav-pills .nav-now {
   color: #fff;
   background: linear-gradient(90deg, var(--violet), var(--pink));
   border-color: transparent;
@@ -181,11 +204,41 @@ body {
 }
 
 /* Scrollspy: the month currently in view */
-.month-nav .nav-month.active {
+.nav-pills .nav-month.active {
   color: #fff;
   background: linear-gradient(90deg, var(--violet), var(--pink));
   border-color: transparent;
   box-shadow: 0 2px 10px var(--glow);
+}
+
+/* Global event search at the right end of the sticky nav */
+.event-search {
+  flex: 0 0 190px;
+  width: 190px;
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(157, 170, 216, 0.25);
+  border-radius: 999px;
+  outline: none;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.event-search:focus {
+  border-color: rgba(167, 139, 250, 0.8);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.event-search::placeholder {
+  color: #77819f;
+}
+
+@media (max-width: 720px) {
+  .event-search {
+    flex-basis: 130px;
+    width: 130px;
+  }
 }
 
 /* ---------- Calendar layout: 3 month cards per row ---------- */
@@ -525,6 +578,55 @@ a.chip-title:focus-visible {
   transform: scale(1.2);
 }
 
+/* Add-to-Google-Calendar — appears on chip hover, like the heart */
+.chip-cal {
+  font-size: 0.82rem;
+  line-height: 1;
+  flex-shrink: 0;
+  text-decoration: none;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.event-chip:hover .chip-cal,
+.event-chip:focus-within .chip-cal {
+  opacity: 1;
+}
+
+.chip-cal:hover {
+  transform: scale(1.2);
+}
+
+/* ---------- Density: comfortable mode ---------- */
+.density-comfortable .event-chip {
+  font-size: 0.95rem;
+  padding: 5px 14px;
+  gap: 7px;
+}
+
+.density-comfortable .chip-flag {
+  font-size: 1.3rem;
+}
+
+.density-comfortable .chip-heart {
+  font-size: 0.8rem;
+}
+
+.density-comfortable .chip-deal,
+.density-comfortable .chip-cal {
+  font-size: 0.92rem;
+}
+
+.density-comfortable .weekend-chips {
+  gap: 8px;
+}
+
+.density-comfortable .weekend-row {
+  gap: 10px;
+  padding: 8px 10px;
+}
+
 /* ---------- Empty state ---------- */
 .empty-state {
   max-width: 1080px;
@@ -722,4 +824,168 @@ a.chip-title:focus-visible {
 
 .hidden {
   display: none !important;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+  .header {
+    padding: 10px 84px 10px 12px;
+  }
+
+  .header h1 {
+    font-size: 1.12rem;
+  }
+
+  .header p {
+    font-size: 0.66rem;
+  }
+
+  /* The tool pills move below the title so nothing overlaps. */
+  .header-tools {
+    position: static;
+    transform: none;
+    justify-content: flex-start;
+    margin-top: 6px;
+    gap: 4px;
+  }
+
+  .past-toggle,
+  .density-toggle {
+    padding: 3px 8px;
+  }
+
+  .filter-panel {
+    top: 10px;
+    right: 10px;
+  }
+
+  .filter-header {
+    padding: 6px 9px;
+  }
+
+  .filter-title {
+    display: none;
+  }
+
+  .month-nav {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .event-search {
+    flex-basis: 110px;
+    width: 110px;
+  }
+
+  .calendar-root {
+    gap: 10px;
+  }
+}
+
+/* ---------- Print ---------- */
+/* JS already forces "show past" on beforeprint; this stylesheet makes
+   the printout clean: no chrome, colored chips kept, one card per flow. */
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+    padding-bottom: 0;
+  }
+
+  .header,
+  .month-nav,
+  .filter-panel,
+  .empty-state {
+    display: none !important;
+  }
+
+  .calendar-root {
+    display: block;
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .year-divider {
+    display: flex;
+    margin: 10px 0 4px;
+  }
+
+  .month-section {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    background: #fff;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    box-shadow: none;
+  }
+
+  .month-section:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .month-title {
+    background: #e9e9f0 !important;
+    color: #111 !important;
+  }
+
+  .month-count {
+    color: #444;
+  }
+
+  .weekend-row,
+  .weekend-row.past {
+    background: #fff !important;
+    opacity: 1 !important;
+    border-top: 1px solid #ddd;
+  }
+
+  .weekend-row.current {
+    background: #f3efff !important;
+    box-shadow: none;
+  }
+
+  .weekend-date {
+    background: #f2f2f7;
+    border-color: #ddd;
+  }
+
+  .wd-range {
+    color: #111;
+  }
+
+  .wd-month {
+    color: #5b4bd4;
+  }
+
+  .wd-days {
+    color: #555;
+  }
+
+  .event-chip {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.25);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .event-chip:hover {
+    transform: none;
+    filter: none;
+  }
+
+  .event-chip.favorite {
+    box-shadow: inset 0 0 0 2px #c9a227;
+  }
+
+  .chip-heart,
+  .chip-cal,
+  .chip-deal {
+    opacity: 1;
+  }
+
+  a {
+    text-decoration: none;
+  }
 }
