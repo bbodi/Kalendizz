@@ -11,6 +11,8 @@
  * Usage:
  *   node scripts/update-events.mjs            # fetch + merge + write
  *   node scripts/update-events.mjs --dry-run  # fetch + report only
+ *   node scripts/update-events.mjs --ci       # exit 0 when the fetch is
+ *                                             # blocked (scheduled automation)
  *
  * The merge is idempotent:
  *   - events already in events.js are kept untouched (dedupe by slug,
@@ -172,11 +174,22 @@ let colorIdx = 0;
 
 const today = new Date().toISOString().slice(0, 10);
 const apiEvents = [];
-for (let page = 1; page <= 10; page++) {
-  const data = await fetchApiPage(page);
-  apiEvents.push(...(data.events || []));
-  if (page >= (data.total_pages || 1)) break;
-  console.log(`fetched page ${page}/${data.total_pages} (${data.events.length} events)`);
+try {
+  for (let page = 1; page <= 10; page++) {
+    const data = await fetchApiPage(page);
+    apiEvents.push(...(data.events || []));
+    if (page >= (data.total_pages || 1)) break;
+    console.log(`fetched page ${page}/${data.total_pages} (${data.events.length} events)`);
+  }
+} catch (err) {
+  if (process.argv.includes('--ci')) {
+    // Automated runs should never go red because the reader proxy
+    // rate-limited us — just skip this week and retry next time.
+    console.error('fetch failed (proxy rate limit?):', err.message);
+    console.error('--ci mode: exiting 0, nothing updated this run.');
+    process.exit(0);
+  }
+  throw err;
 }
 console.log(`total API events: ${apiEvents.length}`);
 

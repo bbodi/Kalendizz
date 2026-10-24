@@ -395,15 +395,30 @@
 
   function matchesSearch(ev) {
     if (!searchQuery) return true;
+    const title = cleanTitle(ev.title)
+      .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
     const hay = [
-      cleanTitle(ev.title),
+      title,
       FLAG_NAMES[ev.flag] || '',
       ev.location || '',
       (ev.tags || []).join(' ')
     ].join(' ')
       .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
       .toLowerCase();
-    return searchQuery.split(/\s+/).every(w => hay.includes(w));
+
+    const tokens = searchQuery.split(/\s+/).filter(Boolean);
+    if (!tokens.length) return true;
+    if (!tokens.every(w => hay.includes(w))) return false;
+
+    // Multi-word queries must also touch the event NAME. Otherwise
+    // accidental cross-field hits produce confusing matches, e.g.
+    // "all sta" → tag "All in One" + location "United States"
+    // matched "Queen City Dance Festival".
+    if (tokens.length > 1 && !tokens.some(w => title.includes(w))) {
+      return false;
+    }
+    return true;
   }
 
   function isVisible(ev) {
