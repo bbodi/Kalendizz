@@ -695,7 +695,7 @@ a.chip-title:focus-visible {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 344px;
+  width: 400px;
   max-width: calc(100vw - 32px);
   background: rgba(19, 23, 39, 0.97);
   backdrop-filter: blur(16px);
@@ -772,8 +772,8 @@ a.chip-title:focus-visible {
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 5px;
-  padding: 8px;
+  gap: 6px;
+  padding: 10px;
   /* Everything visible in one dialog — no inner scrollbar. */
   max-height: none;
   overflow: visible;
@@ -784,7 +784,7 @@ a.chip-title:focus-visible {
   align-items: center;
   justify-content: center;
   aspect-ratio: 1 / 1;
-  font-size: 1.12rem;
+  font-size: 1.45rem;
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid transparent;
   border-radius: 8px;
