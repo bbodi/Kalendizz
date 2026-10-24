@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kizomba, Semba, Urbankiz and Tarraxo festivals around the world, organized by weekend.">
   <title>Kizomba Festivals — Weekend Calendar</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💃</text></svg>">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="header">
     <div class="header-inner">
       <h1>Kizomba Festivals</h1>
-      <p id="header-sub">Weekend calendar · 2026 – 2027</p>
+      <p id="header-sub">Weekend calendar</p>
       <button id="past-toggle" class="past-toggle" type="button" aria-pressed="false"
               title="Show events before this weekend">
         <span class="past-icon" aria-hidden="true">⏳</span><span class="past-label"> Show past</span>
@@ -18,20 +20,25 @@
     </div>
   </header>
 
+  <!-- Sticky month navigation, filled by app.js -->
+  <nav id="month-nav" class="month-nav" aria-label="Jump to month"></nav>
+
   <!-- Hand-built weekend calendar: months → weekends → event chips -->
   <main id="calendar-root" class="calendar-root"></main>
 
-  <div id="empty-state" class="empty-state hidden">No events match the selected filters.</div>
+  <div id="empty-state" class="empty-state hidden" aria-live="polite">No events match the selected filters.</div>
 
   <!-- Country flag filter panel -->
   <div id="filter-panel" class="filter-panel">
     <button id="filter-toggle" class="filter-header" type="button" aria-expanded="false">
       <span class="filter-icon">🏳️</span>
       <span class="filter-title">Filter</span>
-      <span id="filter-count" class="filter-count hidden"></span>
+      <span id="filter-count" class="filter-count hidden" aria-live="polite"></span>
       <span class="filter-arrow" aria-hidden="true">▾</span>
     </button>
     <div id="filter-dropdown" class="filter-dropdown hidden">
+      <input id="filter-search" class="filter-search" type="search"
+             placeholder="Search countries…" aria-label="Search countries">
       <div class="filter-actions">
         <button id="select-all" type="button" class="filter-btn filter-btn-all">All</button>
         <button id="select-none" type="button" class="filter-btn filter-btn-none">None</button>
@@ -41,6 +48,7 @@
   </div>
 
   <script src="events.js"></script>
+  <script src="lib.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

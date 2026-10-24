@@ -65,14 +65,13 @@ body {
 
 /* ---------- Header ---------- */
 .header {
-  position: sticky;
-  top: 0;
+  position: relative; /* anchor for the absolute past-toggle */
   z-index: 50;
   background: rgba(12, 14, 24, 0.72);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
   border-bottom: 1px solid var(--line);
-  padding: 16px;
+  padding: 14px 16px;
   text-align: center;
 }
 
@@ -133,6 +132,54 @@ body {
   }
 }
 
+/* ---------- Sticky month navigation ---------- */
+.month-nav {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 16px;
+  background: rgba(11, 13, 22, 0.78);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+
+.month-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.month-nav button {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #aab3d8;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(157, 170, 216, 0.22);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+
+.month-nav button:hover {
+  color: #fff;
+  border-color: rgba(167, 139, 250, 0.7);
+  background: rgba(124, 92, 255, 0.16);
+}
+
+.month-nav .nav-now {
+  color: #fff;
+  background: linear-gradient(90deg, var(--violet), var(--pink));
+  border-color: transparent;
+  box-shadow: 0 2px 10px var(--glow);
+}
+
 /* ---------- Calendar layout: 3 month cards per row ---------- */
 .calendar-root {
   display: grid;
@@ -166,7 +213,37 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   min-width: 0;
+  scroll-margin-top: 58px; /* keep the title clear of the sticky month nav */
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* Year divider spans the full calendar grid */
+.year-divider {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  color: #6d76a0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.year-divider::before,
+.year-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(157, 170, 216, 0.28), transparent);
+}
+
+.year-divider span {
+  background: linear-gradient(90deg, #c4b5fd, #f9a8d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .month-section:hover {
@@ -322,20 +399,29 @@ body {
 }
 
 .event-chip:hover,
-.event-chip:focus-visible {
+.event-chip:focus-within {
   transform: translateY(-1px);
   filter: brightness(1.08);
   box-shadow: 0 5px 14px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.3);
   outline: none;
 }
 
+/* The flag and heart are real <button>s — reset to chip typography */
+.chip-flag,
+.chip-heart {
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  line-height: 1;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+
 .chip-flag {
   font-size: 1.15rem;
-  line-height: 1;
   flex-shrink: 0;
-  cursor: pointer;
   border-radius: 5px;
-  padding: 1px 2px;
   transition: transform 0.12s ease, background 0.12s ease;
 }
 
@@ -357,7 +443,7 @@ body {
 }
 
 .event-chip.favorite:hover,
-.event-chip.favorite:focus-visible {
+.event-chip.favorite:focus-within {
   box-shadow:
     0 0 0 2px rgba(255, 209, 102, 0.95),
     0 0 18px 4px rgba(255, 209, 102, 0.65),
@@ -371,6 +457,15 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: none;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.chip-title:hover,
+a.chip-title:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  outline: none;
 }
 
 /* Chip line packing is done in app.js: names stay full-length,
@@ -387,10 +482,8 @@ body {
 /* Favorite heart */
 .chip-heart {
   font-size: 0.7rem;
-  line-height: 1;
   opacity: 0;
   flex-shrink: 0;
-  padding: 1px;
   transition: opacity 0.1s ease, transform 0.1s ease;
   user-select: none;
 }
@@ -403,6 +496,12 @@ body {
 
 .chip-heart:hover {
   transform: scale(1.25);
+}
+
+.chip-heart:focus-visible {
+  outline: 2px solid rgba(255, 209, 102, 0.9);
+  outline-offset: 1px;
+  opacity: 1;
 }
 
 /* Deal sparkle */
@@ -502,6 +601,34 @@ body {
   gap: 8px;
   padding: 10px;
   border-bottom: 1px solid var(--line);
+}
+
+/* Country search inside the filter dropdown */
+.filter-search {
+  display: block;
+  width: calc(100% - 20px);
+  margin: 10px 10px 0;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(157, 170, 216, 0.25);
+  border-radius: 9px;
+  outline: none;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.filter-search:focus {
+  border-color: rgba(167, 139, 250, 0.8);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.filter-search::placeholder {
+  color: #77819f;
+}
+
+.search-hidden {
+  display: none !important;
 }
 
 .filter-btn {
