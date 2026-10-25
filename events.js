@@ -1332,18 +1332,6 @@ const EVENTS = [
     tags: ["Kizomba","Semba"]
   },
   {
-    id: "evt-133",
-    flag: "🇺🇸",
-    title: "Konpa 2 Kizomba Festival",
-    start: "2026-11-06",
-    end: "2026-11-08",
-    link: "https://kizomba-world.com/event/konpa-2-kizomba-festival/",
-    backgroundColor: "#673ab7",
-    color: "#ffffff",
-    location: "United States",
-    tags: ["Kizomba","Semba","All in One","Pool Party"]
-  },
-  {
     id: "evt-131",
     flag: "🇸🇪",
     title: "La Luna Festival – Kizz District 2026",
@@ -1397,7 +1385,7 @@ const EVENTS = [
     title: "Over the Moon - Urban Kiz Weekender",
     start: "2026-11-06",
     end: "2026-11-08",
-    link: "https://kizomba-world.com/event/over-the-moon-urban-kiz-weekender/",
+    link: "https://www.tickettailor.com/events/overthemoon/2342787",
     backgroundColor: "#2ecc71",
     color: "#ffffff",
     location: "United States",
@@ -2374,6 +2362,18 @@ const EVENTS = [
     tags: ["All in One","Kizomba","Kompa","Semba","Tarraxo","Urbankiz"]
   },
   {
+    id: "evt-133",
+    flag: "🇺🇸",
+    title: "Konpa 2 Kizomba Festival",
+    start: "2027-02-11",
+    end: "2027-02-15",
+    link: "https://kizomba-world.com/event/konpa-2-kizomba-festival/",
+    backgroundColor: "#673ab7",
+    color: "#ffffff",
+    location: "United States",
+    tags: ["Kizomba","Semba","All in One","Pool Party"]
+  },
+  {
     id: "evt-210",
     flag: "🇨🇿",
     title: "PRAGUE KWANZA FESTIVAL 2027 – Official 9.edition",
@@ -2384,18 +2384,6 @@ const EVENTS = [
     color: "#ffffff",
     location: "Czech Republic",
     tags: ["All in One","Kizomba","Semba","Tarraxo","Urbankiz"]
-  },
-  {
-    id: "evt-209",
-    flag: "🇹🇭",
-    title: "VietNam Kizomba Vacation – VKV",
-    start: "2027-02-11",
-    end: "2027-02-11",
-    link: "https://kizomba-world.com/event/vietnam-kizomba-vacation-vkv/",
-    backgroundColor: "#34495e",
-    color: "#ffffff",
-    location: "Thailand",
-    tags: ["Kizomba","Urbankiz"]
   },
   {
     id: "evt-214",
@@ -2432,6 +2420,18 @@ const EVENTS = [
     color: "#ffffff",
     location: "Germany",
     tags: ["Kizomba","Semba"]
+  },
+  {
+    id: "evt-209",
+    flag: "🇻🇳",
+    title: "VietNam Kizomba Vacation – VKV",
+    start: "2027-02-12",
+    end: "2027-02-14",
+    link: "https://kizomba-world.com/event/vietnam-kizomba-vacation-vkv/",
+    backgroundColor: "#34495e",
+    color: "#ffffff",
+    location: "Vietnam",
+    tags: ["Kizomba","Urbankiz"]
   },
   {
     id: "evt-215",
@@ -2483,14 +2483,14 @@ const EVENTS = [
   },
   {
     id: "evt-222",
-    flag: "🇩🇪",
+    flag: "🇳🇱",
     title: "CLOUDKIZ Weekender 26-28 February 2027",
     start: "2027-02-26",
     end: "2027-02-28",
     link: "https://kizomba-world.com/event/cloudkiz-weekender-26-28-february-2027/",
     backgroundColor: "#e91e63",
     color: "#ffffff",
-    location: "Germany",
+    location: "Netherlands",
     tags: ["Kizomba","Urbankiz"]
   },
   {

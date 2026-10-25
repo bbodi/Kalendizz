@@ -105,6 +105,18 @@ const OVERRIDES = {
   },
   'kasselkiz-urban-kizomba-weekender-in-kassel': {
     start: '2026-10-30', end: '2026-11-01', country: 'Germany'
+  },
+  'konpa-2-kizomba-festival': {
+    start: '2027-02-11', end: '2027-02-15', country: 'United States'
+  },
+  'over-the-moon-urban-kiz-weekender': {
+    link: 'https://www.tickettailor.com/events/overthemoon/2342787'
+  },
+  'cloudkiz-weekender-26-28-february-2027': {
+    country: 'Netherlands'
+  },
+  'vietnam-kizomba-vacation-vkv': {
+    start: '2027-02-12', end: '2027-02-14', country: 'Vietnam'
   }
 };
 
@@ -221,12 +233,12 @@ for (const ev of apiEvents) {
   if (ev.hide_from_listings === true) continue;
 
   const title = decodeEntities(ev.title).trim();
-  const link = ev.url;
-  const slug = slugOf(link);
+  const slug = slugOf(ev.url);
 
   // Known-good corrections for events whose site header/metadata
   // contradicts the page description or external sources.
   const ov = OVERRIDES[slug] || null;
+  const link = ov && ov.link ? ov.link : ev.url;
   let start = ov && ov.start ? ov.start : (ev.start_date || '').slice(0, 10);
   if (!start || start < today) { skippedPast++; continue; }
   if (usedSlugs.has(slug)) { skippedDup++; continue; }
