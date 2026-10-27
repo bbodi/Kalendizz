@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "live-server --port=3000",
-    "test": "node --test tests/",
+    "test": "node --test 'tests/**/*.test.mjs'",
     "update": "node scripts/update-events.mjs"
   },
   "keywords": ["calendar", "kizomba", "festivals", "static"],

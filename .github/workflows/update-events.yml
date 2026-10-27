@@ -23,7 +23,7 @@ jobs:
           node-version: 22
 
       - name: Run tests (guards against regressions)
-        run: node --test tests/
+        run: node --test 'tests/**/*.test.mjs'
 
       - name: Fetch and merge new events
         # --ci: a proxy rate-limit must not fail the run; the job just
